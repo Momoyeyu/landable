@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>landable — Land PRs in projects that want them</title>
+  <meta name="description" content="An interest-driven open-source contribution pipeline. From discovering repositories to merged PRs — with you deciding what to work on and what to publish.">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:title" content="landable — Land PRs in projects that want them">
+  <meta property="og:description" content="An interest-driven open-source contribution pipeline. From discovering repositories to merged PRs.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0f10;
+      --bg-raised: #161719;
+      --bg-surface: #1c1d1f;
+      --bg-hover: #222325;
+      --text: #ecece6;
+      --text-secondary: #9b9b93;
+      --text-tertiary: #6b6b65;
+      --accent: #d4a84b;
+      --accent-dim: #b8923e;
+      --accent-glow: rgba(212, 168, 75, 0.12);
+      --brand-orange: #E8623C;
+      --brand-gold: #F2A33C;
+      --border: #2a2b2d;
+      --border-light: #333436;
+      --serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+      --sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
+    a:hover { color: var(--brand-gold); }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14, 15, 16, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-brand {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-brand span {
+      background: linear-gradient(135deg, var(--brand-orange), var(--brand-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--accent);
+      color: var(--bg) !important;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .nav-cta:hover { background: var(--brand-gold); color: var(--bg) !important; }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px 0 60px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .hero-tagline {
+      font-family: var(--serif);
+      font-size: clamp(36px, 4.5vw, 56px);
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .hero-tagline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 480px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover { background: var(--brand-gold); color: var(--bg); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover { border-color: var(--text-secondary); background: var(--bg-raised); color: var(--text); }
+
+    /* ── Interactive Pipeline Widget ── */
+    .pipeline-widget {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .pw-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pw-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border-light);
+    }
+
+    .pw-dot:nth-child(1) { background: #e5484d; }
+    .pw-dot:nth-child(2) { background: #e5a000; }
+    .pw-dot:nth-child(3) { background: #30a46c; }
+
+    .pw-title {
+      margin-left: 8px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    .pw-body {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      min-height: 320px;
+    }
+
+    .pw-sidebar {
+      border-right: 1px solid var(--border);
+      padding: 12px 0;
+    }
+
+    .pw-stage {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .pw-stage:hover { color: var(--text-secondary); background: var(--bg-hover); }
+
+    .pw-stage.active {
+      color: var(--accent);
+      background: var(--accent-glow);
+      border-right: 2px solid var(--accent);
+    }
+
+    .pw-stage-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .pw-stage.active .pw-stage-num {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    .pw-stage.gate::after {
+      content: 'gate';
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-dim);
+      margin-left: auto;
+      background: rgba(212, 168, 75, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .pw-content {
+      padding: 20px;
+    }
+
+    .pw-content-title {
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .pw-content-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .pw-steps {
+      list-style: none;
+    }
+
+    .pw-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .pw-step-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 9px;
+    }
+
+    .pw-step-icon.done { background: #30a46c; color: #fff; }
+    .pw-step-icon.current { background: var(--accent); color: var(--bg); }
+    .pw-step-icon.pending { background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-tertiary); }
+
+    /* ── Section shared ── */
+    section { padding: 80px 0; }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(28px, 3.5vw, 40px);
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Pipeline Section ── */
+    .pipeline-section { border-top: 1px solid var(--border); }
+
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .pipeline-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      transition: border-color 0.2s;
+    }
+
+    .pipeline-card:hover { border-color: var(--border-light); }
+
+    .pipeline-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .pipeline-card-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--accent-glow);
+      color: var(--accent);
+      border: 1px solid rgba(212, 168, 75, 0.2);
+      flex-shrink: 0;
+    }
+
+    .pipeline-card-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      color: var(--text);
+    }
+
+    .pipeline-card-desc {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+
+    .pipeline-card-badge {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      background: var(--accent-glow);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* ── Differentiators ── */
+    .diff-section { border-top: 1px solid var(--border); }
+
+    .diff-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .diff-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+    }
+
+    .diff-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .diff-card-title {
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .diff-card-desc {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+
+    /* ── Case Studies ── */
+    .cases-section { border-top: 1px solid var(--border); }
+
+    .case-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .case-item {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      transition: border-color 0.2s;
+    }
+
+    .case-item:hover { border-color: var(--border-light); }
+
+    .case-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .case-repo {
+      font-family: var(--serif);
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .case-meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .case-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #30a46c;
+      background: rgba(48, 164, 108, 0.1);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .case-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #30a46c;
+    }
+
+    .case-summary {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+
+    .case-detail {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-top: 8px;
+    }
+
+    /* ── Install Section ── */
+    .install-section {
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .install-section .section-desc {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .install-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      margin-bottom: 24px;
+    }
+
+    .install-code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 15px;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .install-copy {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 16px;
+      transition: color 0.15s;
+    }
+
+    .install-copy:hover { color: var(--text); }
+
+    .install-hint {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-top: 16px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .footer-links a:hover { color: var(--text-secondary); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .pipeline-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .pw-body {
+        grid-template-columns: 1fr;
+      }
+
+      .pw-sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        overflow-x: auto;
+        padding: 0;
+      }
+
+      .pw-stage {
+        white-space: nowrap;
+        padding: 12px 14px;
+        border-right: none !important;
+        border-bottom: 2px solid transparent;
+      }
+
+      .pw-stage.active {
+        border-bottom-color: var(--accent);
+        border-right: none;
+      }
+
+      .pw-stage.gate::after { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 48px 0 40px; }
+      section { padding: 56px 0; }
+
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--bg-raised);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px;
+        gap: 16px;
+      }
+
+      .mobile-toggle { display: block; }
+
+      .pipeline-grid,
+      .diff-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-actions { flex-direction: column; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+
+      .install-box { flex-direction: column; text-align: center; }
+      .install-code { font-size: 13px; word-break: break-all; white-space: normal; }
+
+      .case-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container nav-inner">
+      <a href="#" class="nav-brand">land<span>able</span></a>
+      <button class="mobile-toggle" aria-label="Toggle navigation" aria-expanded="false" id="navToggle">&#9776;</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#pipeline">Pipeline</a></li>
+        <li><a href="#approach">Approach</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#install" class="nav-cta">Get Started</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <h1 class="hero-tagline">The patch is rarely the hard part — <em>knowing where it can land</em> is.</h1>
+          <p class="hero-desc">landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.</p>
+          <div class="hero-actions">
+            <a href="#pipeline" class="btn-primary">See how it works</a>
+            <a href="https://github.com/Momoyeyu/landable" class="btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              View on GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Pipeline Widget -->
+        <div class="pipeline-widget" role="region" aria-label="Pipeline demonstration">
+          <div class="pw-titlebar">
+            <div class="pw-dot"></div>
+            <div class="pw-dot"></div>
+            <div class="pw-dot"></div>
+            <span class="pw-title">landable workspace</span>
+          </div>
+          <div class="pw-body">
+            <div class="pw-sidebar" role="tablist" aria-label="Pipeline stages">
+              <button class="pw-stage active" role="tab" aria-selected="true" data-stage="0">
+                <span class="pw-stage-num">1</span> Profile
+              </button>
+              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="1">
+                <span class="pw-stage-num">2</span> Scout
+              </button>
+              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="2">
+                <span class="pw-stage-num">3</span> Assess
+              </button>
+              <button class="pw-stage" role="tab" aria-selected="false" data-stage="3">
+                <span class="pw-stage-num">4</span> Implement
+              </button>
+              <button class="pw-stage" role="tab" aria-selected="false" data-stage="4">
+                <span class="pw-stage-num">5</span> Ship
+              </button>
+              <button class="pw-stage" role="tab" aria-selected="false" data-stage="5">
+                <span class="pw-stage-num">6</span> Track
+              </button>
+            </div>
+            <div class="pw-content" role="tabpanel" id="pwPanel">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pipeline Section -->
+  <section class="pipeline-section" id="pipeline">
+    <div class="container">
+      <p class="section-label">The Pipeline</p>
+      <h2 class="section-title">Six stages, two decisions</h2>
+      <p class="section-desc">You pick what to work on and approve what gets published. Between those gates, the agent is autonomous.</p>
+
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <div class="pipeline-card-header">
+            <span class="pipeline-card-num">1</span>
+            <h3 class="pipeline-card-title">Profile</h3>
+          </div>
+          <p class="pipeline-card-desc">Builds an interest card — domains, languages, layer preference — and a capability card for available hardware. Your profile shapes every downstream decision.</p>
+        </div>
+
+        <div class="pipeline-card">
+          <div class="pipeline-card-header">
+            <span class="pipeline-card-num">2</span>
+            <h3 class="pipeline-card-title">Scout</h3>
+          </div>
+          <p class="pipeline-card-desc">Fetches GitHub Trending within your star range, filters by interest fit, and returns a ranked candidate table with a flagged watch list just over the range.</p>
+          <span class="pipeline-card-badge">Gate 1 — you pick repos</span>
+        </div>
+
+        <div class="pipeline-card">
+          <div class="pipeline-card-header">
+            <span class="pipeline-card-num">3</span>
+            <h3 class="pipeline-card-title">Assess</h3>
+          </div>
+          <p class="pipeline-card-desc">Probes each repo's real openness: who gets merged, whether issues get replies, whether the fix lives in that repo or a dependency, and whether the scope is feasible.</p>
+          <span class="pipeline-card-badge">Gate 2 — you pick issues</span>
+        </div>
+
+        <div class="pipeline-card">
+          <div class="pipeline-card-header">
+            <span class="pipeline-card-num">4</span>
+            <h3 class="pipeline-card-title">Implement</h3>
+          </div>
+          <p class="pipeline-card-desc">Forks the repo, claims the issue with a comment, writes the fix and a regression test, runs the project's own test and lint gates. Nothing is pushed yet.</p>
+        </div>
+
+        <div class="pipeline-card">
+          <div class="pipeline-card-header">
+            <span class="pipeline-card-num">5</span>
+            <h3 class="pipeline-card-title">Ship</h3>
+          </div>
+          <p class="pipeline-card-desc">Pushes branches, opens PRs on the correct base branch respecting each repo's CONTRIBUTING.md and AGENTS.md rules, fills PR templates honestly.</p>
+        </div>
+
+        <div class="pipeline-card">
+          <div class="pipeline-card-header">
+            <span class="pipeline-card-num">6</span>
+            <h3 class="pipeline-card-title">Track</h3>
+          </div>
+          <p class="pipeline-card-desc">Monitors CI, diagnoses failures, follows up on maintainer review comments. Reports terminal status honestly — merged, closed-with-reason, or parked.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Differentiators -->
+  <section class="diff-section" id="approach">
+    <div class="container">
+      <p class="section-label">The Approach</p>
+      <h2 class="section-title">What most tools skip</h2>
+      <p class="section-desc">The interesting stage isn't implementation — it's assessment. landable checks things agents usually don't.</p>
+
+      <div class="diff-grid">
+        <div class="diff-card">
+          <div class="diff-card-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="diff-card-title">Acceptance probing</h3>
+          <p class="diff-card-desc">Samples recent merged PRs by authorAssociation. A repo where every merge is OWNER or MEMBER is a closed club — no matter how good the issues look. landable checks before you commit time.</p>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-card-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+          </div>
+          <h3 class="diff-card-title">Dependency-aware targeting</h3>
+          <p class="diff-card-desc">Bugs surface in one repo but root in its dependencies. The agent follows imports before committing to a target — fixing the actual cause, not the reported symptom.</p>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-card-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="diff-card-title">Claim detection</h3>
+          <p class="diff-card-desc">Detects soft claims ("I'll work on this"), assignees, linked PRs, and fork references to avoid racing claimed issues. Fast-moving queues get noted, not gamed.</p>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-card-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3 class="diff-card-title">Rules compliance</h3>
+          <p class="diff-card-desc">Reads CONTRIBUTING.md, AGENTS.md, and PR templates before anything is written. Base branch, sign-off, commit signing, changelog format — the repo's own rules always win.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case Studies -->
+  <section class="cases-section" id="results">
+    <div class="container">
+      <p class="section-label">Results</p>
+      <h2 class="section-title">Does it land?</h2>
+      <p class="section-desc">Real issues carried through to merged PRs. Only merged ones are listed — an open PR is never reported as done.</p>
+
+      <div class="case-list">
+        <article class="case-item">
+          <div class="case-header">
+            <span class="case-repo">kvcache-ai/sglang</span>
+            <span class="case-status">Merged</span>
+          </div>
+          <p class="case-summary">Bug filed in ktransformers, traced via imports to this sibling repo. GLM-4.5 MoE configs silently fell back to wrong rope_theta under Transformers 5. Patch resolved both fields through get_rope_config with a regression test.</p>
+          <p class="case-detail">PR #100 — fixing ktransformers#2214 — bug filed in one repo, fixed in its sibling</p>
+        </article>
+
+        <article class="case-item">
+          <div class="case-header">
+            <span class="case-repo">Tencent-Hunyuan/UniRL</span>
+            <span class="case-status">Merged</span>
+          </div>
+          <p class="case-summary">Three uncalled helpers deleted from the sharded-state path. They selected tensors by key substring, so frozen teacher adapters could have silently leaked weights into student exports. Merged the day it opened.</p>
+          <p class="case-detail">PR #530, fixing #514 — merged the day it opened</p>
+        </article>
+
+        <article class="case-item">
+          <div class="case-header">
+            <span class="case-repo">Tencent-Hunyuan/UniRL</span>
+            <span class="case-status">Merged</span>
+          </div>
+          <p class="case-summary">SDE strategy's log_prob returned only the squared term, but the SGLang adapter never set the no-constant flag on the SDE path. The two sides of the ratio were scoring different quantities. Fixed by declaring log_prob_no_const per strategy.</p>
+          <p class="case-detail">PR #536, fixing #533 — the two sides of the ratio were scoring different quantities</p>
+        </article>
+
+        <article class="case-item">
+          <div class="case-header">
+            <span class="case-repo">MakazhanAlpamys/Soup</span>
+            <span class="case-status">Merged</span>
+          </div>
+          <p class="case-summary">Streamed test builders hardcoded cuda or cpu, causing device mismatch on Apple Silicon. One helper in conftest un-skipped 32 test cases — all pass. Verified on M3 Ultra (29,080 tests) and CUDA.</p>
+          <p class="case-detail">PR #1375, fixing #1355 — 32 skipped cases brought back</p>
+        </article>
+
+        <article class="case-item">
+          <div class="case-header">
+            <span class="case-repo">MakazhanAlpamys/Soup</span>
+            <span class="case-status">Merged</span>
+          </div>
+          <p class="case-summary">The reasoning data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can't read. The prompt now names the markers the rewards parse. Re-scoped mid-flight per maintainer feedback.</p>
+          <p class="case-detail">PR #1471, fixing #1349 — scope narrowed to what review actually wanted</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section class="install-section" id="install">
+    <div class="container">
+      <p class="section-label">Get Started</p>
+      <h2 class="section-title">Install the skill</h2>
+      <p class="section-desc">One command. Then ask for repos in your interest area — landable handles the rest, pausing at each gate for your decision.</p>
+
+      <div class="install-box">
+        <code class="install-code" id="installCode">npx skills add Momoyeyu/landable -g</code>
+        <button class="install-copy" aria-label="Copy install command" id="copyBtn" title="Copy to clipboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+
+      <p class="install-hint">Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-left">landable &middot; MIT License &middot; by Momoyeyu</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/Momoyeyu/landable">GitHub</a></li>
+        <li><a href="https://github.com/Momoyeyu/landable/blob/master/landable/SKILL.md">Skill Docs</a></li>
+        <li><a href="https://github.com/Momoyeyu/landable/blob/master/LICENSE">License</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // Pipeline widget data
+    const stages = [
+      {
+        title: 'Profile',
+        desc: 'Building your interest card from your domains, languages, and hardware capabilities.',
+        steps: [
+          { text: 'Parsing technical interests: AI infra, CUDA, Python tooling', state: 'done' },
+          { text: 'Detecting available hardware: Apple Silicon + CUDA GPU', state: 'done' },
+          { text: 'Layer preference: systems, frameworks, tooling', state: 'done' },
+          { text: 'Profile card saved to ~/.config/landable/', state: 'done' },
+        ]
+      },
+      {
+        title: 'Scout',
+        desc: 'Fetching GitHub Trending and ranking repos by interest fit within your star range.',
+        steps: [
+          { text: 'Fetched daily + weekly trending from GitHub', state: 'done' },
+          { text: 'Filtered: 0–10,000 stars, matching interest domains', state: 'done' },
+          { text: 'Ranked 12 candidates by profile fit score', state: 'done' },
+          { text: 'Awaiting your selection — Gate 1', state: 'current' },
+        ]
+      },
+      {
+        title: 'Assess',
+        desc: 'Probing each selected repo for real openness and actionable issues.',
+        steps: [
+          { text: 'Checking authorAssociation on merged PRs...', state: 'done' },
+          { text: 'Verifying: 34% external merges — repo is open', state: 'done' },
+          { text: 'Following imports: bug roots in this repo, confirmed', state: 'done' },
+          { text: 'Scanning for claims: no assignees, no linked PRs', state: 'current' },
+          { text: 'Awaiting your issue selection — Gate 2', state: 'pending' },
+        ]
+      },
+      {
+        title: 'Implement',
+        desc: 'Forking, claiming the issue, writing the fix and regression test.',
+        steps: [
+          { text: 'Forked repo and cloned locally', state: 'done' },
+          { text: 'Claimed issue with assignment comment', state: 'done' },
+          { text: 'Implemented fix on feature branch', state: 'done' },
+          { text: 'Wrote regression test — passes on new code, fails on old', state: 'done' },
+          { text: 'Running repo test suite and lint gates', state: 'current' },
+        ]
+      },
+      {
+        title: 'Ship',
+        desc: 'Pushing branches and opening PRs following each repo\'s contribution rules.',
+        steps: [
+          { text: 'Read CONTRIBUTING.md: base branch = main, requires sign-off', state: 'done' },
+          { text: 'Pushed feature branch to fork', state: 'done' },
+          { text: 'Opened PR with DCO sign-off and conventional commit', state: 'done' },
+          { text: 'Filled PR template — linked issue, described reproduction', state: 'current' },
+          { text: 'Awaiting CI results', state: 'pending' },
+        ]
+      },
+      {
+        title: 'Track',
+        desc: 'Monitoring CI, handling review feedback, reporting final status.',
+        steps: [
+          { text: 'CI passed: tests green, lint clean', state: 'done' },
+          { text: 'Maintainer review: requested one change', state: 'done' },
+          { text: 'Addressed feedback, pushed update', state: 'done' },
+          { text: 'Review approved', state: 'done' },
+          { text: 'Merged — terminal status reported', state: 'done' },
+        ]
+      }
+    ];
+
+    const stepIcons = { done: '&#10003;', current: '&#9679;', pending: '&#9675;' };
+
+    function renderStage(idx) {
+      const s = stages[idx];
+      const panel = document.getElementById('pwPanel');
+      panel.innerHTML =
+        '<h3 class="pw-content-title">' + s.title + '</h3>' +
+        '<p class="pw-content-desc">' + s.desc + '</p>' +
+        '<ul class="pw-steps">' +
+        s.steps.map(function(st) {
+          return '<li class="pw-step">' +
+            '<span class="pw-step-icon ' + st.state + '">' + stepIcons[st.state] + '</span>' +
+            '<span>' + st.text + '</span>' +
+            '</li>';
+        }).join('') +
+        '</ul>';
+    }
+
+    // Stage switching
+    document.querySelectorAll('.pw-stage').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.pw-stage').forEach(function(b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        renderStage(parseInt(btn.dataset.stage));
+      });
+    });
+
+    renderStage(0);
+
+    // Copy install command
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      var code = document.getElementById('installCode').textContent;
+      navigator.clipboard.writeText(code).then(function() {
+        var btn = document.getElementById('copyBtn');
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#30a46c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        setTimeout(function() {
+          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+        }, 2000);
+      });
+    });
+
+    // Mobile nav toggle
+    document.getElementById('navToggle').addEventListener('click', function() {
+      var links = document.getElementById('navLinks');
+      var expanded = links.classList.toggle('open');
+      this.setAttribute('aria-expanded', String(expanded));
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        document.getElementById('navLinks').classList.remove('open');
+        document.getElementById('navToggle').setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+
+</body>
+</html>
