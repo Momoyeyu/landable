@@ -817,15 +817,8 @@
     }
 
     /* ── Install Section ── */
-    .install-section {
-      border-top: 1px solid var(--border);
-      text-align: center;
-    }
-
-    .install-section .section-desc {
-      margin-left: auto;
-      margin-right: auto;
-    }
+    .install-section { margin: 28px 0 24px; scroll-margin-top: calc(var(--nav-h) + 24px); }
+    .install-section .install-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
 
     .install-box {
       position: relative;
@@ -836,8 +829,8 @@
       background: var(--bg-raised);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 24px;
-      margin-bottom: 24px;
+      padding: 12px 16px;
+      max-width: 100%;
     }
 
     @property --ang {
@@ -888,9 +881,9 @@
     .install-copy:hover { color: var(--text); }
 
     .install-hint {
-      font-size: 14px;
-      color: var(--text-tertiary);
-      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 10px;
     }
 
     /* ── Footer ── */
@@ -1247,7 +1240,18 @@
         <div class="hero-copy">
           <h1 class="hero-tagline" data-reveal="0" data-split data-i18n="hero_tagline">The patch is rarely the hard part — <em>knowing where it can land</em> is.</h1>
           <p class="hero-desc" data-reveal="5" data-i18n="hero_desc">landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.</p>
-          <div class="hero-actions" data-reveal="6">
+          <!-- Install -->
+          <div class="install-section" id="install">
+            <h2 class="install-title" data-reveal="6" data-i18n="install_title">Install the skill</h2>
+            <div class="install-box" data-reveal="6">
+              <code class="install-code" id="installCode">npx skills add Momoyeyu/landable -g</code>
+              <button class="install-copy" aria-label="Copy install command" id="copyBtn" title="Copy to clipboard">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+            <p class="install-hint" data-reveal="7" data-i18n="install_hint">Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.</p>
+          </div>
+          <div class="hero-actions" data-reveal="8">
             <a href="#pipeline" class="btn-primary" data-i18n="hero_cta_primary">See how it works</a>
             <a href="https://github.com/Momoyeyu/landable" class="btn-secondary">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -1463,24 +1467,6 @@
     </div>
   </section>
 
-  <!-- Install -->
-  <section class="install-section" id="install">
-    <div class="container">
-      <p class="section-label" data-reveal data-i18n="install_label">Get Started</p>
-      <h2 class="section-title" data-reveal data-split data-i18n="install_title">Install the skill</h2>
-      <p class="section-desc" data-reveal data-i18n="install_desc">One command. Then ask for repos in your interest area — landable handles the rest, pausing at each gate for your decision.</p>
-
-      <div class="install-box" data-reveal>
-        <code class="install-code" id="installCode">npx skills add Momoyeyu/landable -g</code>
-        <button class="install-copy" aria-label="Copy install command" id="copyBtn" title="Copy to clipboard">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
-      </div>
-
-      <p class="install-hint" data-reveal data-i18n="install_hint">Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.</p>
-    </div>
-  </section>
-
   <!-- Footer -->
   <footer>
     <div class="container footer-inner">
@@ -1551,9 +1537,7 @@
         case_c3_summary: 'Elastic GPU KV-cache sharing. An old listener\'s delayed stop could delete a replacement\'s live Unix socket; the patch guards unlink by socket identity and tests the replacement race.',
         case_c4_summary: 'Multimodal RL. Verified that adapter-unaware sharded-state helpers were unused before removal; separately aligned CPS rollout log-probs without changing training-side loss scaling.',
 
-        install_label: 'Get Started',
         install_title: 'Install the skill',
-        install_desc: 'One command. Then ask for repos in your interest area — landable handles the rest, pausing at each gate for your decision.',
         install_hint: 'Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.',
 
         footer_left: 'landable &middot; MIT License &middot; by Momoyeyu',
@@ -1683,9 +1667,7 @@
         case_c3_summary: '弹性 GPU KV cache。旧 listener 延迟关闭时可能误删同名新 listener 的 Unix socket；补丁按 socket 身份判断是否可删除，并覆盖替换时序。',
         case_c4_summary: '多模态强化学习。先确认不理解 adapter 的分片状态辅助函数无调用，再删除；另一个修复对齐 CPS rollout log-prob，避免改变训练侧 loss 缩放。',
 
-        install_label: '开始使用',
         install_title: '安装 Skill',
-        install_desc: '一条命令装好 Skill，然后告诉它你关注什么领域。剩下的它来——发现、评估、实现，到决策点再叫你。',
         install_hint: '需要 Node.js 和 GitHub CLI（<code>gh</code>）。',
 
         footer_left: 'landable &middot; MIT License &middot; by Momoyeyu',
