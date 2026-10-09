@@ -773,10 +773,7 @@
       color: var(--text);
     }
 
-    .case-meta {
-      font-size: 12px;
-      color: var(--text-tertiary);
-    }
+    .case-stars { height: 18px; opacity: 0.9; }
 
     .case-status {
       display: inline-flex;
@@ -1419,53 +1416,49 @@
     <div class="container">
       <p class="section-label" data-reveal data-i18n="case_label">Results</p>
       <h2 class="section-title" data-reveal data-split data-i18n="case_title">Does it land?</h2>
-      <p class="section-desc" data-reveal data-i18n="case_desc">Real issues carried through to merged PRs. Only merged ones are listed — an open PR is never reported as done.</p>
+      <p class="section-desc" data-reveal data-i18n="case_desc">Selected contributions found through landable — every link below is a merged PR.</p>
 
       <div class="case-list">
         <article class="case-item spot" data-reveal>
           <div class="case-header">
-            <span class="case-repo">kvcache-ai/sglang</span>
+            <a class="case-repo" href="https://github.com/tt-a1i/archify">tt-a1i/archify</a>
+            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/tt-a1i/archify?style=flat-square&labelColor=161719&color=d4a84b">
             <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary" data-i18n="case_c1_summary">Bug filed in ktransformers, traced via imports to this sibling repo. GLM-4.5 MoE configs silently fell back to wrong rope_theta under Transformers 5. Patch resolved both fields through get_rope_config with a regression test.</p>
-          <p class="case-detail" data-i18n="case_c1_detail">PR #100 — fixing ktransformers#2214 — bug filed in one repo, fixed in its sibling</p>
+          <p class="case-summary" data-i18n="case_c1_summary">An agent skill for interactive diagrams. Repair-rounds evidence led to actionable endpoint diagnostics and clearer repair suggestions; follow-up tests closed benchmark blind spots.</p>
+          <p class="case-detail">PRs: <a href="https://github.com/tt-a1i/archify/pull/654">#654</a> · <a href="https://github.com/tt-a1i/archify/pull/707">#707</a></p>
         </article>
 
         <article class="case-item spot" data-reveal>
           <div class="case-header">
-            <span class="case-repo">Tencent-Hunyuan/UniRL</span>
+            <a class="case-repo" href="https://github.com/MakazhanAlpamys/Soup">MakazhanAlpamys/Soup</a>
+            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/MakazhanAlpamys/Soup?style=flat-square&labelColor=161719&color=d4a84b">
             <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary" data-i18n="case_c2_summary">Three uncalled helpers deleted from the sharded-state path. They selected tensors by key substring, so frozen teacher adapters could have silently leaked weights into student exports. Merged the day it opened.</p>
-          <p class="case-detail" data-i18n="case_c2_detail">PR #530, fixing #514 — merged the day it opened</p>
+          <p class="case-summary" data-i18n="case_c2_summary">LLM fine-tuning on modest hardware. Scoped issues span MPS test coverage, parseable answers, evaluation scoring, numeric reward references, and false reward-hacking alarms. Validation and maintainer feedback shaped each patch.</p>
+          <p class="case-detail">PRs: <a href="https://github.com/MakazhanAlpamys/Soup/pull/1375">#1375</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1471">#1471</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1490">#1490</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1533">#1533</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1630">#1630</a></p>
         </article>
 
         <article class="case-item spot" data-reveal>
           <div class="case-header">
-            <span class="case-repo">Tencent-Hunyuan/UniRL</span>
+            <a class="case-repo" href="https://github.com/ovg-project/kvcached">ovg-project/kvcached</a>
+            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/ovg-project/kvcached?style=flat-square&labelColor=161719&color=d4a84b">
             <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary" data-i18n="case_c3_summary">SDE strategy's log_prob returned only the squared term, but the SGLang adapter never set the no-constant flag on the SDE path. The two sides of the ratio were scoring different quantities. Fixed by declaring log_prob_no_const per strategy.</p>
-          <p class="case-detail" data-i18n="case_c3_detail">PR #536, fixing #533 — the two sides of the ratio were scoring different quantities</p>
+          <p class="case-summary" data-i18n="case_c3_summary">Elastic GPU KV-cache sharing. An old listener's delayed stop could delete a replacement's live Unix socket; the patch guards unlink by socket identity and tests the replacement race.</p>
+          <p class="case-detail">PR: <a href="https://github.com/ovg-project/kvcached/pull/519">#519</a></p>
         </article>
 
         <article class="case-item spot" data-reveal>
           <div class="case-header">
-            <span class="case-repo">MakazhanAlpamys/Soup</span>
+            <a class="case-repo" href="https://github.com/Tencent-Hunyuan/UniRL">Tencent-Hunyuan/UniRL</a>
+            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/Tencent-Hunyuan/UniRL?style=flat-square&labelColor=161719&color=d4a84b">
             <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary" data-i18n="case_c4_summary">Streamed test builders hardcoded cuda or cpu, causing device mismatch on Apple Silicon. One helper in conftest un-skipped 32 test cases — all pass. Verified on M3 Ultra (29,080 tests) and CUDA.</p>
-          <p class="case-detail" data-i18n="case_c4_detail">PR #1375, fixing #1355 — 32 skipped cases brought back</p>
+          <p class="case-summary" data-i18n="case_c4_summary">Multimodal RL. Verified that adapter-unaware sharded-state helpers were unused before removal; separately aligned CPS rollout log-probs without changing training-side loss scaling.</p>
+          <p class="case-detail">PRs: <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/530">#530</a> · <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/536">#536</a></p>
         </article>
 
-        <article class="case-item spot" data-reveal>
-          <div class="case-header">
-            <span class="case-repo">MakazhanAlpamys/Soup</span>
-            <span class="case-status" data-i18n="case_merged">Merged</span>
-          </div>
-          <p class="case-summary" data-i18n="case_c5_summary">The reasoning data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can't read. The prompt now names the markers the rewards parse. Re-scoped mid-flight per maintainer feedback.</p>
-          <p class="case-detail" data-i18n="case_c5_detail">PR #1471, fixing #1349 — scope narrowed to what review actually wanted</p>
-        </article>
       </div>
     </div>
   </section>
@@ -1551,18 +1544,12 @@
 
         case_label: 'Results',
         case_title: 'Does it land?',
-        case_desc: 'Real issues carried through to merged PRs. Only merged ones are listed — an open PR is never reported as done.',
+        case_desc: 'Selected contributions found through landable — every link below is a merged PR.',
         case_merged: 'Merged',
-        case_c1_summary: 'Bug filed in ktransformers, traced via imports to this sibling repo. GLM-4.5 MoE configs silently fell back to wrong rope_theta under Transformers 5. Patch resolved both fields through get_rope_config with a regression test.',
-        case_c1_detail: 'PR #100 — fixing ktransformers#2214 — bug filed in one repo, fixed in its sibling',
-        case_c2_summary: 'Three uncalled helpers deleted from the sharded-state path. They selected tensors by key substring, so frozen teacher adapters could have silently leaked weights into student exports. Merged the day it opened.',
-        case_c2_detail: 'PR #530, fixing #514 — merged the day it opened',
-        case_c3_summary: "SDE strategy's log_prob returned only the squared term, but the SGLang adapter never set the no-constant flag on the SDE path. The two sides of the ratio were scoring different quantities. Fixed by declaring log_prob_no_const per strategy.",
-        case_c3_detail: 'PR #536, fixing #533 — the two sides of the ratio were scoring different quantities',
-        case_c4_summary: 'Streamed test builders hardcoded cuda or cpu, causing device mismatch on Apple Silicon. One helper in conftest un-skipped 32 test cases — all pass. Verified on M3 Ultra (29,080 tests) and CUDA.',
-        case_c4_detail: 'PR #1375, fixing #1355 — 32 skipped cases brought back',
-        case_c5_summary: 'The reasoning data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can\'t read. The prompt now names the markers the rewards parse. Re-scoped mid-flight per maintainer feedback.',
-        case_c5_detail: 'PR #1471, fixing #1349 — scope narrowed to what review actually wanted',
+        case_c1_summary: 'An agent skill for interactive diagrams. Repair-rounds evidence led to actionable endpoint diagnostics and clearer repair suggestions; follow-up tests closed benchmark blind spots.',
+        case_c2_summary: 'LLM fine-tuning on modest hardware. Scoped issues span MPS test coverage, parseable answers, evaluation scoring, numeric reward references, and false reward-hacking alarms. Validation and maintainer feedback shaped each patch.',
+        case_c3_summary: 'Elastic GPU KV-cache sharing. An old listener\'s delayed stop could delete a replacement\'s live Unix socket; the patch guards unlink by socket identity and tests the replacement race.',
+        case_c4_summary: 'Multimodal RL. Verified that adapter-unaware sharded-state helpers were unused before removal; separately aligned CPS rollout log-probs without changing training-side loss scaling.',
 
         install_label: 'Get Started',
         install_title: 'Install the skill',
@@ -1689,18 +1676,12 @@
 
         case_label: '实战',
         case_title: '能中吗？',
-        case_desc: '从 issue 到合并的完整记录。只列真正合并了的——没中的不算。',
+        case_desc: '用 landable 找到并成功贡献的精选案例——链接都指向已合并的 PR。',
         case_merged: '已合并',
-        case_c1_summary: 'Bug 报在 ktransformers，顺着 import 追到了 sglang。GLM-4.5 MoE 在 Transformers 5 下 rope_theta 会悄悄回退到错误值。补丁通过 get_rope_config 一并修复，附回归测试。',
-        case_c1_detail: 'PR #100 — 修复 ktransformers#2214 — 一个仓库报的 bug，另一个仓库修的',
-        case_c2_summary: '清理了分片状态路径上三个没人调的辅助函数。它们按键名字符串选张量，有概率把冻结的 teacher 权重泄漏到 student 导出里。当天提当天合。',
-        case_c2_detail: 'PR #530，修复 #514 — 当天提当天合',
-        case_c3_summary: 'SDE 策略的 log_prob 只算了平方项，SGLang 适配器在 SDE 路径上又漏设了 no-constant 标志，导致比率两边算的不是同一个东西。给每个策略单独声明 log_prob_no_const 搞定。',
-        case_c3_detail: 'PR #536，修复 #533 — 比率两边算的不是一回事',
-        case_c4_summary: '测试构建器写死了 cuda 或 cpu，Apple Silicon 上直接设备不匹配。改了 conftest 里一个 helper，恢复 32 个被跳过的用例，全绿。M3 Ultra（29,080 个测试）和 CUDA 都跑过。',
-        case_c4_detail: 'PR #1375，修复 #1355 — 救回 32 个被跳过的测试',
-        case_c5_summary: '推理数据模板让模型输出"最终答案"，但没指定格式，奖励函数根本解析不了。改成输出奖励函数能认的标记。后来按维护者意见缩小了范围。',
-        case_c5_detail: 'PR #1471，修复 #1349 — 按评审意见缩小范围',
+        case_c1_summary: '把想法和代码库变成交互图的 Agent Skill。repair-rounds 基准测试暴露诊断难以指导修复的问题，于是改进端点诊断与修复建议，再补齐基准测试盲区。',
+        case_c2_summary: '小显存也能微调 LLM。选中能验证的 issue：MPS 测试覆盖、答案解析、评估打分、数值奖励与离散奖励误报；每次都根据实测和维护者反馈调整。',
+        case_c3_summary: '弹性 GPU KV cache。旧 listener 延迟关闭时可能误删同名新 listener 的 Unix socket；补丁按 socket 身份判断是否可删除，并覆盖替换时序。',
+        case_c4_summary: '多模态强化学习。先确认不理解 adapter 的分片状态辅助函数无调用，再删除；另一个修复对齐 CPS rollout log-prob，避免改变训练侧 loss 缩放。',
 
         install_label: '开始使用',
         install_title: '安装 Skill',

@@ -57,49 +57,31 @@ npx skills add Momoyeyu/landable -g
 
 ## 真的能落地吗
 
-下面是 landable 替我找到、我一路做到合并的 issue——目前五条，只列真正合进去的，open 的永远不会被报成完成。每一条都是一次站得住的匹配：愿意 review 外部人的仓库、scope 合适的 issue、真心想留下这个补丁的 maintainer。
+用 landable 找到并成功贡献的精选案例——下面的链接都指向已合并的 PR。
 
-### kvcache-ai/sglang
+### [tt-a1i/archify](https://github.com/tt-a1i/archify) [![stars](https://img.shields.io/github/stars/tt-a1i/archify?style=flat-square)](https://github.com/tt-a1i/archify)
 
-<sub>已合并 · [#100](https://github.com/kvcache-ai/sglang/pull/100)，修复 [ktransformers#2214](https://github.com/kvcache-ai/ktransformers/issues/2214) · bug 报在一个仓库，修复落在它的 sibling</sub>
+把想法和代码库变成交互图的 Agent Skill。repair-rounds 基准测试暴露了诊断信息难以指导修复的问题，于是改进悬空端点诊断、修复建议和回执，再补齐基准测试的盲区。先前手动完成的 #634 **不计入** landable 案例。
 
-[SGLang](https://github.com/kvcache-ai/sglang) 是面向 LLM 和视觉语言模型的高性能推理框架——这里指 kvcache-ai org 的 fork。
+已合并：[#654](https://github.com/tt-a1i/archify/pull/654)（结构化诊断与修复建议，关联 #594）、[#707](https://github.com/tt-a1i/archify/pull/707)（基准测试覆盖，关联 #670）。
 
-**做了什么。** Transformers 5 下 GLM-4.5 MoE 的 RoPE 配置挪进了 `config.rope_parameters`，但 `Glm4MoeDecoderLayer` 还在读旧的顶层字段——每层静默回退到 `rope_theta=10000`，长上下文输出悄悄变差。补丁把两个字段统一走 `get_rope_config` 解析，并补了在旧代码上必失败的回归测试（+104/−5）。
+### [MakazhanAlpamys/Soup](https://github.com/MakazhanAlpamys/Soup) [![stars](https://img.shields.io/github/stars/MakazhanAlpamys/Soup?style=flat-square)](https://github.com/MakazhanAlpamys/Soup)
 
-**landable 做了什么。** bug 报在 `ktransformers`——Assess 顺着 import 追到 sibling 仓库才动手。然后在真机上验证：RTX 4090 D 跑通一个小型 GLM4-MoE checkpoint，确认 `rope_theta` 解析出 `1_000_000` 而非旧的 `10_000`，rotary 输出在 position 4096 之后如预期分叉。与上游 `sgl-project/sglang#21135` 是同一个修复——这个 fork 漏掉了它。
+一份 YAML 就能微调 LLM，layer streaming 还能在小显存 GPU 上训练。这里找到的 issue 能在现有硬件上验证：追查共享答案解析器而非只改症状，也按 maintainer 的反馈收窄改动范围。
 
-### Tencent-Hunyuan/UniRL
+已合并：[#1375](https://github.com/MakazhanAlpamys/Soup/pull/1375)（恢复 32 个 MPS 测试，修复 #1355）、[#1471](https://github.com/MakazhanAlpamys/Soup/pull/1471)（可解析的推理答案，修复 #1349）、[#1490](https://github.com/MakazhanAlpamys/Soup/pull/1490)（自定义评估按最终答案打分，修复 #1342）、[#1533](https://github.com/MakazhanAlpamys/Soup/pull/1533)（数值答案解析及拒绝原因，修复 #1350）、[#1630](https://github.com/MakazhanAlpamys/Soup/pull/1630)（离散奖励不误报 reward hacking，修复 #1438）。
 
-[UniRL](https://github.com/Tencent-Hunyuan/UniRL) 是腾讯混元的统一多模态强化学习训练框架。
+### [ovg-project/kvcached](https://github.com/ovg-project/kvcached) [![stars](https://img.shields.io/github/stars/ovg-project/kvcached?style=flat-square)](https://github.com/ovg-project/kvcached)
 
-<sub>已合并 · [#530](https://github.com/Tencent-Hunyuan/UniRL/pull/530)，修复 [#514](https://github.com/Tencent-Hunyuan/UniRL/issues/514) · 提交当天被合并</sub>
+面向 GPU 工作负载的弹性 KV cache。旧 listener 延迟关闭时会误删同名替换者正在使用的 Unix socket；修复通过 socket 身份判断是否能 unlink，并覆盖与新 listener 并存的停机时序。
 
-**做了什么。** 从 sharded-state 路径删掉三个无人调用的辅助函数（+1/−34）。这不是顺手清理：这些函数按 key 子串匹配 tensor——从 #432 开始可训练模块旁边能挂冻结的 teacher adapter，谁调用了它们，就会把 teacher 权重悄悄混进 student 的导出。真正在用的路径早已是 adapter-aware 的，这段死代码留着就是个隐患。
+已合并：[#519](https://github.com/ovg-project/kvcached/pull/519)（关联 #510）。
 
-**landable 做了什么。** Scout 阶段把 UniRL 识别为「外部 PR 真的会被合」的仓库；Assess 阶段在写代码之前把 #514 查到底——没有调用方、没有撞车的 PR、真实路径都走 `peft_merge`；仓库的 no-`tests/` 政策让测试无法提交，于是写了一次性验证 harness，在 Apple Silicon 和 CUDA 两台机器上跑通；最后按项目自己的 checklist 开 PR，并在正文里如实披露有 AI 参与。当天被合并。
+### [Tencent-Hunyuan/UniRL](https://github.com/Tencent-Hunyuan/UniRL) [![stars](https://img.shields.io/github/stars/Tencent-Hunyuan/UniRL?style=flat-square)](https://github.com/Tencent-Hunyuan/UniRL)
 
-<sub>已合并 · [#536](https://github.com/Tencent-Hunyuan/UniRL/pull/536)，修复 [#533](https://github.com/Tencent-Hunyuan/UniRL/issues/533) · ratio 两端算的本来就不是同一个量</sub>
+多模态强化学习框架。第一个 issue 要确认按 key 匹配的分片状态辅助函数既有风险又确实无调用；第二个要对齐 SGLang rollout 的 log-prob 约定，同时不改变训练侧 loss 的缩放。两项改动都先验证再提交。
 
-**做了什么。** `CPSSDEStrategy.compute_log_prob` 只返回 `-(x − μ)²`，但 SGLang adapter 从没在 SDE 路径上设置 `rollout_log_prob_no_const`，SGLang 记录的是完整高斯项——这个差值随 σ 变化，不是常量。`old_logp_source=rollout` 时几乎所有 `cps` ratio 都被 clip；`replay` 时 drift 指标毫无意义。现在 `SDEStrategy` 声明 `log_prob_no_const`（`cps` 为 `True`，`flow`/`dance` 为 `False`），由 adapter 转发（+10/−0）。
-
-**landable 做了什么。** 选了 issue 里建议的「更干净的方案」而不是显眼方案——让训练侧输出完整高斯会改变 `cps` 的 loss 缩放。用纯 CPU harness 验证（独立加载三个改动模块，不依赖 `ray`/`sglang`）：no-const 路径与 `compute_log_prob` 完全一致，旧路径精确复现 issue 里的 gap 表。进这个仓库的第二个 PR，一天内合并。
-
-### MakazhanAlpamys/Soup
-
-[Soup](https://github.com/MakazhanAlpamys/Soup) 用一个 YAML 微调 LLM——layer streaming 能在 4 GB 显存的笔记本 GPU 上训练 8B 模型。
-
-<sub>已合并 · [#1375](https://github.com/MakazhanAlpamys/Soup/pull/1375)，修复 [#1355](https://github.com/MakazhanAlpamys/Soup/issues/1355) · 32 个被跳过的测试回归</sub>
-
-**做了什么。** streamed 测试的 builder 写死了 `cuda or cpu`：在 Apple Silicon 上模型建到 CPU，trainer 却选了 `mps:0`，设备不匹配让 32 个用例常年挂在 `skipif` 后面。`conftest` 里一个 `accelerator_device()` helper——返回 trainer 自己选的设备——把整个套件解放出来，32 个全部通过（+97/−127）。
-
-**landable 做了什么。** 认领 issue，把三份重复的设备探测收进一个 helper，两端都验了真机——M3 Ultra 上全量 29,080 个测试、skip 数恰好减 32，4090 D 上 CUDA 路径保持不变。按 maintainer 的 review 意见迭代到 approved，随后合并。
-
-<sub>已合并 · [#1471](https://github.com/MakazhanAlpamys/Soup/pull/1471)，修复 [#1349](https://github.com/MakazhanAlpamys/Soup/issues/1349) · 范围收窄到 review 真正要的部分</sub>
-
-**做了什么。** `reasoning` 数据模板只要求一个 "final answer"，没有任何可解析的形式，生成的行可能带着 reward 路径读不出的 gold——GRPO demo fixture 里那些解析不了的行就是这么来的。现在 prompt 写明 reward 认的标记：math 行用 `####`，logic/code 行用 `Answer:`。新测试钉死两份 fixture 逐字节一致、每条 gold 可解析（+95/−2）。
-
-**landable 做了什么。** 中途收窄范围：#1371 的 variable-prefix 规则落地后，原计划改 fixture 的部分变成多余，PR 收缩成模板修复加 pin 测试——按 issue 上确认过的方案走。经历一轮 changes-requested 迭代到 approved，次日合并。
+已合并：[#530](https://github.com/Tencent-Hunyuan/UniRL/pull/530)（删除不理解 adapter 的辅助函数，修复 #514）、[#536](https://github.com/Tencent-Hunyuan/UniRL/pull/536)（对齐 CPS rollout log-prob，修复 #533）。
 
 ## 试试看
 
@@ -114,7 +96,7 @@ npx skills add Momoyeyu/landable -g
 ```
 
 ```text
-看看那四个 PR 的状态，有 CI 失败就快速跟进。
+看看我还没合并的贡献 PR 有什么进展，有 CI 失败就跟进。
 ```
 
 第一个请求会先建兴趣卡和候选排序表，然后问你想深入评估哪几个仓库。推送任何内容都要等你明确点头——这是硬闸门，不是建议。

@@ -57,49 +57,31 @@ Everything that faces a human — issue comments, commit messages, PR bodies —
 
 ## Does it land?
 
-Below are issues landable surfaced for me, carried through to merged PRs — five so far, and only merged ones are listed; an open one is never called done. Each entry is a match that held up: a repo that reviews outsiders, an issue scoped to a real fix, a maintainer who wanted the patch kept.
+Selected contributions found through landable — every link below is a merged PR.
 
-### kvcache-ai/sglang
+### [tt-a1i/archify](https://github.com/tt-a1i/archify) [![stars](https://img.shields.io/github/stars/tt-a1i/archify?style=flat-square)](https://github.com/tt-a1i/archify)
 
-<sub>MERGED · [#100](https://github.com/kvcache-ai/sglang/pull/100), fixing [ktransformers#2214](https://github.com/kvcache-ai/ktransformers/issues/2214) · bug filed in one repo, fixed in its sibling</sub>
+An agent skill for turning ideas and codebases into interactive diagrams. After the repair-rounds benchmark exposed where diagnostics made fixes harder, contributions improved structured endpoint errors and actionable repair suggestions, then filled benchmark blind spots. The benchmark work informed follow-up fixes; the earlier manually completed #634 is **not** a landable example.
 
-[SGLang](https://github.com/kvcache-ai/sglang) is a fast serving framework for LLMs and vision-language models — here, the kvcache-ai org's fork.
+Merged here: [#654](https://github.com/tt-a1i/archify/pull/654) (diagnostics and repairability, refs #594), [#707](https://github.com/tt-a1i/archify/pull/707) (benchmark coverage, refs #670).
 
-**What we shipped.** Under Transformers 5, GLM-4.5 MoE configs moved RoPE settings into `config.rope_parameters`, but `Glm4MoeDecoderLayer` still read the legacy top-level fields — every layer silently fell back to `rope_theta=10000`, quietly degrading long-context output. The patch resolves both fields through `get_rope_config` and adds a regression test that fails on the old code (+104/−5).
+### [MakazhanAlpamys/Soup](https://github.com/MakazhanAlpamys/Soup) [![stars](https://img.shields.io/github/stars/MakazhanAlpamys/Soup?style=flat-square)](https://github.com/MakazhanAlpamys/Soup)
 
-**What landable did.** The bug was *filed* on `ktransformers`; assessment followed the imports into this sibling repo before a line was written. Then it verified on real hardware: an RTX 4090 D ran a tiny GLM4-MoE checkpoint end-to-end, confirming `rope_theta` resolves to `1_000_000` instead of `10_000`, with rotary outputs diverging past position 4096. Same fix as upstream `sgl-project/sglang#21135` — this fork had missed it.
+LLM fine-tuning from a single YAML, with layer streaming for smaller GPUs. Matching meant finding issues that could be verified on available hardware, tracing shared answer parsing rather than patching symptoms, and adapting scope to maintainer feedback.
 
-### Tencent-Hunyuan/UniRL
+Merged here: [#1375](https://github.com/MakazhanAlpamys/Soup/pull/1375) (restore 32 MPS test cases, fixes #1355), [#1471](https://github.com/MakazhanAlpamys/Soup/pull/1471) (parseable reasoning answers, fixes #1349), [#1490](https://github.com/MakazhanAlpamys/Soup/pull/1490) (custom evaluation answer scoring, fixes #1342), [#1533](https://github.com/MakazhanAlpamys/Soup/pull/1533) (numeric reward golds and rejected references, fixes #1350), [#1630](https://github.com/MakazhanAlpamys/Soup/pull/1630) (avoid false reward-hacking alarms on discrete rewards, fixes #1438).
 
-[UniRL](https://github.com/Tencent-Hunyuan/UniRL) is Tencent Hunyuan's unified framework for multimodal reinforcement learning.
+### [ovg-project/kvcached](https://github.com/ovg-project/kvcached) [![stars](https://img.shields.io/github/stars/ovg-project/kvcached?style=flat-square)](https://github.com/ovg-project/kvcached)
 
-<sub>MERGED · [#530](https://github.com/Tencent-Hunyuan/UniRL/pull/530), fixing [#514](https://github.com/Tencent-Hunyuan/UniRL/issues/514) · merged the day it opened</sub>
+Elastic KV-cache sharing for GPU workloads. A same-name listener replacement could lose its live Unix socket when the old listener stopped. The fix checks socket identity before unlinking and covers delayed shutdown against a live replacement.
 
-**What we shipped.** Three uncalled helpers deleted from the sharded-state path (+1/−34). It wasn't cosmetic: they selected tensors by key substring, so once frozen "teacher" adapters could sit beside the trainable one, they would have silently leaked teacher weights into student exports. The live paths were already adapter-aware — the dead code was a quiet footgun.
+Merged here: [#519](https://github.com/ovg-project/kvcached/pull/519) (refs #510).
 
-**What landable did.** Scouted UniRL as a repo where outside PRs actually get merged; assessed issue #514 before writing code — no in-repo callers, no competing PRs, the real paths go through `peft_merge`; built a throwaway verification harness (the repo's no-`tests/` policy meant nothing could be committed) and ran it on both Apple Silicon and CUDA; opened the PR against the project's own checklist, with the AI assistance disclosed. Merged the same day.
+### [Tencent-Hunyuan/UniRL](https://github.com/Tencent-Hunyuan/UniRL) [![stars](https://img.shields.io/github/stars/Tencent-Hunyuan/UniRL?style=flat-square)](https://github.com/Tencent-Hunyuan/UniRL)
 
-<sub>MERGED · [#536](https://github.com/Tencent-Hunyuan/UniRL/pull/536), fixing [#533](https://github.com/Tencent-Hunyuan/UniRL/issues/533) · the two sides of the ratio were scoring different quantities</sub>
+Multimodal reinforcement learning. The first issue needed proof that unused sharded-state helpers were unsafe and truly dead; the second needed matching the SGLang rollout log-prob convention without changing training-side loss scaling. Both were scoped and verified before submission.
 
-**What we shipped.** `CPSSDEStrategy.compute_log_prob` returns only `-(x − μ)²`, but the SGLang adapter never set `rollout_log_prob_no_const` on the SDE path, so SGLang recorded the full Gaussian — a σ-dependent gap, not a constant. With `old_logp_source=rollout` almost every `cps` ratio clipped; with `replay` the drift metric was meaningless. `SDEStrategy` now declares `log_prob_no_const` (`True` for `cps`, `False` for `flow`/`dance`) and the adapter forwards it (+10/−0).
-
-**What landable did.** Took the "cleaner option" the issue itself suggested rather than the obvious one — emitting the full Gaussian on the train side would have changed `cps` loss scaling. Verified with a CPU-only harness that loads the three touched modules standalone (no `ray`, no `sglang`): the no-const path now matches `compute_log_prob` exactly, while the old path reproduces the issue's gap table. Second PR into this repo, merged inside a day.
-
-### MakazhanAlpamys/Soup
-
-[Soup](https://github.com/MakazhanAlpamys/Soup) fine-tunes LLMs from a single YAML — its layer streaming trains an 8B model on a 4 GB laptop GPU.
-
-<sub>MERGED · [#1375](https://github.com/MakazhanAlpamys/Soup/pull/1375), fixing [#1355](https://github.com/MakazhanAlpamys/Soup/issues/1355) · 32 skipped cases brought back</sub>
-
-**What we shipped.** The streamed test builders hardcoded `cuda or cpu`, so on Apple Silicon the model landed on CPU while the trainer picked `mps:0` — a device mismatch that had parked 32 test cases behind `skipif` marks. One `accelerator_device()` helper in `conftest`, returning exactly what the trainer picks, un-skipped the whole suite; all 32 pass (+97/−127).
-
-**What landable did.** Claimed the issue, consolidated three copies of the device probe into one helper, and verified both sides of the matrix on real hardware — the full suite on an M3 Ultra (29,080 tests, skip count down exactly 32) and the unchanged CUDA path on a 4090 D. Iterated through the maintainer's review to approved, then merged.
-
-<sub>MERGED · [#1471](https://github.com/MakazhanAlpamys/Soup/pull/1471), fixing [#1349](https://github.com/MakazhanAlpamys/Soup/issues/1349) · scope narrowed to what review actually wanted</sub>
-
-**What we shipped.** The `reasoning` data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can't read — which is how the GRPO demo fixture's unparsed rows happened. The prompt now names the markers the rewards parse: `####` for math rows, `Answer:` for logic/code. A new test pins the two fixture copies byte-identical and every gold parseable (+95/−2).
-
-**What landable did.** Re-scoped mid-flight: once #1371's variable-prefix rule landed, the planned fixture edit was redundant, so the PR shrank to the template fix plus the pin — per the plan confirmed on the issue. Iterated through a changes-requested review to approved; merged the next day.
+Merged here: [#530](https://github.com/Tencent-Hunyuan/UniRL/pull/530) (remove adapter-unaware helpers, fixes #514), [#536](https://github.com/Tencent-Hunyuan/UniRL/pull/536) (align CPS rollout log-probs, fixes #533).
 
 ## Try it
 
@@ -114,7 +96,7 @@ My interests: CUDA performance, LLM quantization, C++/Python tooling.
 ```
 
 ```text
-Check how the four PRs are doing. Follow up any CI failures.
+Check my open contribution PRs. Follow up any CI failures.
 ```
 
 The first request builds an interest card and a ranked table, then asks which repos deserve a deeper look. Pushing anything always waits for your explicit go — that's a hard gate, not a suggestion.
