@@ -11,7 +11,8 @@
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add('js');</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,12 +32,17 @@
       --border: #2a2b2d;
       --border-light: #333436;
       --serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
-      --sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --sans: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
       --radius: 8px;
       --radius-lg: 12px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+      --nav-h: 65px;
     }
 
     html { scroll-behavior: smooth; }
+
+    section { scroll-margin-top: var(--nav-h); }
 
     body {
       font-family: var(--sans);
@@ -111,6 +117,36 @@
 
     .nav-links a:hover { color: var(--text); }
 
+    .nav-links a:not(.nav-cta) { position: relative; }
+
+    .nav-links a:not(.nav-cta)::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -6px;
+      height: 1px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.5s var(--ease-out);
+    }
+
+    .nav-links a.active { color: var(--text); }
+    .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+
+    .scroll-progress {
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold));
+      transform: scaleX(0);
+      transform-origin: left;
+      pointer-events: none;
+    }
+
     .nav-cta {
       display: inline-flex;
       align-items: center;
@@ -126,6 +162,37 @@
 
     .nav-cta:hover { background: var(--brand-gold); color: var(--bg) !important; }
 
+    .lang-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .lang-toggle button {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-family: var(--sans);
+    }
+
+    .lang-toggle button.active {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
     .mobile-toggle {
       display: none;
       background: none;
@@ -139,6 +206,44 @@
     /* ── Hero ── */
     .hero {
       padding: 80px 0 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero > .container { position: relative; z-index: 1; }
+
+    .hero-glow {
+      position: absolute;
+      top: -280px;
+      right: -200px;
+      width: 820px;
+      height: 820px;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(232, 98, 60, 0.11) 0%, rgba(212, 168, 75, 0.06) 32%, transparent 64%);
+      transform: translate3d(calc(var(--gx, 0) * 1px), calc(var(--gy, 0) * 1px), 0);
+      animation: glowBreath 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowBreath {
+      from { opacity: 0.7; scale: 0.94; }
+      to { opacity: 1; scale: 1.06; }
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(236, 236, 230, 0.07) 1px, transparent 1px);
+      background-size: 28px 28px;
+      -webkit-mask-image: radial-gradient(ellipse 60% 70% at 72% 40%, #000 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse 60% 70% at 72% 40%, #000 0%, transparent 70%);
+      transform: translate3d(0, calc(var(--hero-out, 0) * 60px), 0);
+    }
+
+    .hero-copy {
+      transform: translate3d(0, calc(var(--hero-out, 0) * -70px), 0);
+      opacity: calc(1 - var(--hero-out, 0) * 0.6);
     }
 
     .hero-grid {
@@ -187,11 +292,11 @@
       border: none;
       border-radius: var(--radius);
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, transform 0.15s;
       text-decoration: none;
     }
 
-    .btn-primary:hover { background: var(--brand-gold); color: var(--bg); }
+    .btn-primary:hover { background: var(--brand-gold); color: var(--bg); transform: translateY(-1px); }
 
     .btn-secondary {
       display: inline-flex;
@@ -205,26 +310,71 @@
       border: 1px solid var(--border-light);
       border-radius: var(--radius);
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s;
       text-decoration: none;
     }
 
-    .btn-secondary:hover { border-color: var(--text-secondary); background: var(--bg-raised); color: var(--text); }
+    .btn-secondary:hover { border-color: var(--text-secondary); background: var(--bg-raised); color: var(--text); transform: translateY(-1px); }
 
     /* ── Interactive Pipeline Widget ── */
     .pipeline-widget {
+      position: relative;
       background: var(--bg-raised);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       overflow: hidden;
+      transition: border-color 0.3s;
+      --extra-t: border-color 0.3s;
+      transform: translate3d(0, calc(var(--hero-out, 0) * -36px), 0) perspective(1400px) rotateX(calc(var(--ty, 0) * 1deg)) rotateY(calc(var(--tx, 0) * 1deg));
+      box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.015);
     }
 
+    .pipeline-widget::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(520px circle at var(--px, 50%) var(--py, 0%), rgba(255, 255, 255, 0.05), transparent 45%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .pipeline-widget:hover { border-color: var(--border-light); }
+    .pipeline-widget:hover::after { opacity: 1; }
+
     .pw-titlebar {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
+    }
+
+    .pw-timer {
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold));
+      transform: scaleX(0);
+      transform-origin: left;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .pw-timer.run {
+      opacity: 1;
+      animation: pwTimer var(--pw-dur, 4.6s) linear forwards;
+    }
+
+    .pipeline-widget.paused .pw-timer.run { animation-play-state: paused; }
+
+    @keyframes pwTimer {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
     }
 
     .pw-dot {
@@ -252,11 +402,27 @@
     }
 
     .pw-sidebar {
+      position: relative;
       border-right: 1px solid var(--border);
       padding: 12px 0;
     }
 
+    .pw-indicator {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: var(--ih, 40px);
+      transform: translate3d(0, var(--iy, 12px), 0);
+      background: var(--accent-glow);
+      border-right: 2px solid var(--accent);
+      pointer-events: none;
+      transition: transform 0.55s var(--ease-out), height 0.55s var(--ease-out), width 0.55s var(--ease-out);
+    }
+
     .pw-stage {
+      position: relative;
+      z-index: 1;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -270,15 +436,13 @@
       width: 100%;
       text-align: left;
       transition: color 0.15s, background 0.15s;
+      font-family: var(--sans);
     }
 
     .pw-stage:hover { color: var(--text-secondary); background: var(--bg-hover); }
 
-    .pw-stage.active {
-      color: var(--accent);
-      background: var(--accent-glow);
-      border-right: 2px solid var(--accent);
-    }
+    .pw-stage.active { color: var(--accent); }
+    .pw-stage.active:hover { background: transparent; }
 
     .pw-stage-num {
       display: flex;
@@ -294,14 +458,17 @@
       flex-shrink: 0;
     }
 
+    .pw-stage-num { transition: background 0.35s, color 0.35s, border-color 0.35s, scale 0.45s var(--ease-out); }
+
     .pw-stage.active .pw-stage-num {
       background: var(--accent);
       color: var(--bg);
       border-color: var(--accent);
+      scale: 1.08;
     }
 
     .pw-stage.gate::after {
-      content: 'gate';
+      content: attr(data-gate-label);
       font-size: 9px;
       font-weight: 600;
       text-transform: uppercase;
@@ -322,6 +489,7 @@
       font-size: 18px;
       color: var(--text);
       margin-bottom: 8px;
+      animation: panelIn 0.6s var(--ease-out) both;
     }
 
     .pw-content-desc {
@@ -329,6 +497,12 @@
       line-height: 1.6;
       color: var(--text-secondary);
       margin-bottom: 16px;
+      animation: panelIn 0.6s var(--ease-out) 0.06s both;
+    }
+
+    @keyframes panelIn {
+      from { opacity: 0; translate: 0 8px; filter: blur(4px); }
+      to { opacity: 1; translate: none; filter: none; }
     }
 
     .pw-steps {
@@ -342,9 +516,17 @@
       padding: 6px 0;
       font-size: 12px;
       color: var(--text-secondary);
+      animation: stepIn 0.5s var(--ease-out) both;
+      animation-delay: calc(0.14s + var(--si, 0) * 0.09s);
+    }
+
+    @keyframes stepIn {
+      from { opacity: 0; translate: -10px 0; }
+      to { opacity: 1; translate: none; }
     }
 
     .pw-step-icon {
+      position: relative;
       width: 16px;
       height: 16px;
       border-radius: 50%;
@@ -356,8 +538,35 @@
       font-size: 9px;
     }
 
-    .pw-step-icon.done { background: #30a46c; color: #fff; }
+    .pw-step-icon.done {
+      background: #30a46c;
+      color: #fff;
+      animation: iconPop 0.5s var(--ease-out) both;
+      animation-delay: calc(0.26s + var(--si, 0) * 0.09s);
+    }
+
+    @keyframes iconPop {
+      from { scale: 0.3; opacity: 0; }
+      60% { scale: 1.15; opacity: 1; }
+      to { scale: 1; }
+    }
+
     .pw-step-icon.current { background: var(--accent); color: var(--bg); }
+
+    .pw-step-icon.current::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      animation: ring 1.8s var(--ease-out) infinite;
+    }
+
+    @keyframes ring {
+      from { opacity: 0.9; scale: 0.75; }
+      to { opacity: 0; scale: 1.7; }
+    }
+
     .pw-step-icon.pending { background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-tertiary); }
 
     /* ── Section shared ── */
@@ -402,10 +611,28 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 28px 24px;
-      transition: border-color 0.2s;
+      transition: border-color 0.25s, transform 0.35s var(--ease-out);
+      --extra-t: transform 0.35s var(--ease-out), border-color 0.25s;
     }
 
-    .pipeline-card:hover { border-color: var(--border-light); }
+    .pipeline-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
+
+    /* Pointer-following spotlight shared by every card */
+    .spot { position: relative; isolation: isolate; }
+
+    .spot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(212, 168, 75, 0.09), transparent 42%);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .spot:hover::before { opacity: 1; }
 
     .pipeline-card-header {
       display: flex;
@@ -468,7 +695,23 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 28px 24px;
+      transition: border-color 0.25s, transform 0.35s var(--ease-out);
+      --extra-t: transform 0.35s var(--ease-out), border-color 0.25s;
     }
+
+    .diff-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
+
+    .js .diff-card-icon svg > * {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      transition: stroke-dashoffset 1.3s var(--ease-out);
+      transition-delay: calc(0.35s + var(--i, 0) * 0.09s);
+    }
+
+    .js .diff-card.in-view .diff-card-icon svg > * { stroke-dashoffset: 0; }
+
+    .diff-card-icon { transition: scale 0.45s var(--ease-out), background 0.3s; }
+    .diff-card:hover .diff-card-icon { scale: 1.08; background: rgba(212, 168, 75, 0.18); }
 
     .diff-card-icon {
       width: 40px;
@@ -509,10 +752,11 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       padding: 24px 28px;
-      transition: border-color 0.2s;
+      transition: border-color 0.25s, transform 0.35s var(--ease-out);
+      --extra-t: transform 0.35s var(--ease-out), border-color 0.25s;
     }
 
-    .case-item:hover { border-color: var(--border-light); }
+    .case-item:hover { border-color: var(--border-light); transform: translateX(4px); }
 
     .case-header {
       display: flex;
@@ -556,6 +800,13 @@
       background: #30a46c;
     }
 
+    .case-item.in-view .case-status::before { animation: mergedPulse 2.6s var(--ease-out) 0.8s infinite; }
+
+    @keyframes mergedPulse {
+      0% { box-shadow: 0 0 0 0 rgba(48, 164, 108, 0.55); }
+      70%, 100% { box-shadow: 0 0 0 7px rgba(48, 164, 108, 0); }
+    }
+
     .case-summary {
       font-size: 14px;
       line-height: 1.65;
@@ -580,6 +831,8 @@
     }
 
     .install-box {
+      position: relative;
+      isolation: isolate;
       display: inline-flex;
       align-items: center;
       gap: 12px;
@@ -589,6 +842,34 @@
       padding: 16px 24px;
       margin-bottom: 24px;
     }
+
+    @property --ang {
+      syntax: '<angle>';
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    .install-box::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1px;
+      pointer-events: none;
+      background: conic-gradient(from var(--ang), transparent 0 62%, rgba(242, 163, 60, 0.9) 82%, transparent 94%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 1s;
+      animation: borderSpin 5s linear infinite;
+    }
+
+    .install-box.in-view::before { opacity: 1; }
+
+    @keyframes borderSpin { to { --ang: 360deg; } }
+
+    .install-copy.copied { animation: iconPop 0.45s var(--ease-out); }
 
     .install-code {
       font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -647,6 +928,197 @@
 
     .footer-links a:hover { color: var(--text-secondary); }
 
+    /* ── Reveal: one-shot, settles fully visible ──
+       Gated on .js so content never hides without the script. Uses the
+       individual `translate`/`scale` properties so hover `transform`s compose
+       instead of fighting the entrance. */
+    .js [data-reveal] {
+      --d: calc(var(--i, 0) * 90ms);
+      opacity: 0;
+      translate: 0 28px;
+      transition:
+        opacity 0.9s var(--ease-out) var(--d),
+        translate 1.1s var(--ease-out) var(--d),
+        scale 1.1s var(--ease-out) var(--d),
+        var(--extra-t, border-color 0.25s);
+    }
+
+    .js [data-reveal].in-view { opacity: 1; translate: none; scale: none; }
+
+    /* :where keeps these start states below .in-view's specificity */
+    .js :where(.pipeline-widget)[data-reveal] { translate: 0 36px; scale: 0.96; }
+    .js :where(.case-item)[data-reveal] { translate: -24px 0; }
+
+    /* Word-by-word mask rise for headlines */
+    .w {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: top;
+      padding: 0 0.08em 0.14em;
+      margin: 0 -0.08em -0.14em;
+    }
+
+    .w > span { display: inline-block; }
+
+    .js [data-split] .w > span {
+      translate: 0 112%;
+      transition: translate 1s var(--ease-out) calc(var(--wi, 0) * 42ms + var(--i, 0) * 90ms);
+    }
+
+    .js [data-split].in-view .w > span { translate: none; }
+    .js [data-reveal][data-split] { opacity: 1; translate: none; }
+
+    /* ── Pipeline chapter: sticky scroll story (desktop) ── */
+    .chapter-rail { display: none; }
+
+    .pipeline-section.chapter-on { padding: 0; }
+
+    .chapter-on .chapter-stage {
+      position: sticky;
+      top: var(--nav-h);
+      height: calc(100vh - var(--nav-h));
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 72px;
+      align-items: center;
+    }
+
+    .chapter-on .section-desc { margin-bottom: 36px; }
+
+    .chapter-on .chapter-rail {
+      display: block;
+      position: relative;
+      list-style: none;
+      padding-left: 30px;
+      --rp: 0;
+    }
+
+    .chapter-rail::before,
+    .chapter-rail::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 14px;
+      bottom: 14px;
+      width: 1px;
+      background: var(--border-light);
+    }
+
+    .chapter-rail::after {
+      left: 4.5px;
+      width: 2px;
+      background: linear-gradient(var(--brand-gold), var(--brand-orange));
+      transform: scaleY(var(--rp));
+      transform-origin: top;
+    }
+
+    .rail-item button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 7px 0;
+      background: none;
+      border: 0;
+      color: var(--text-tertiary);
+      font: 500 14px/1.4 var(--sans);
+      text-align: left;
+      cursor: pointer;
+      transition: color 0.35s, translate 0.45s var(--ease-out);
+    }
+
+    .rail-item button::before {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 50%;
+      width: 11px;
+      height: 11px;
+      margin-top: -5.5px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+      transition: background 0.35s, border-color 0.35s, box-shadow 0.35s, scale 0.45s var(--ease-out);
+    }
+
+    .rail-item button:hover { color: var(--text-secondary); }
+    .rail-item.done button::before { background: var(--accent-dim); border-color: var(--accent-dim); }
+    .rail-item.active button { color: var(--text); translate: 4px 0; }
+
+    .rail-item.active button::before {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 5px rgba(212, 168, 75, 0.15);
+      scale: 1.15;
+    }
+
+    .rail-num { width: 20px; font-size: 12px; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+
+    .rail-gate {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-dim);
+      background: rgba(212, 168, 75, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    /* The grid becomes one fixed card frame; stage cards are transparent
+       content layers that hand off inside it without overlapping. */
+    .chapter-on .pipeline-grid {
+      display: block;
+      position: relative;
+      height: min(420px, 60vh);
+      background: var(--bg-raised);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 40px 100px -50px rgba(0, 0, 0, 0.9);
+    }
+
+    .js .chapter-on .pipeline-grid .pipeline-card[data-reveal] {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      opacity: var(--co, 0);
+      translate: none;
+      scale: none;
+      transform: translate3d(0, var(--cy, 0px), 0) scale(var(--cs, 1));
+      transition: none;
+      will-change: opacity, transform;
+    }
+
+    .chapter-on .pipeline-card:not(.is-active) { pointer-events: none; }
+    .chapter-on .pipeline-card-header { gap: 16px; margin-bottom: 20px; }
+    .chapter-on .pipeline-card-num { width: 44px; height: 44px; font-size: 17px; }
+    .chapter-on .pipeline-card-title { font-size: 36px; }
+    .chapter-on .pipeline-card-desc { font-size: 18px; line-height: 1.7; max-width: 44ch; }
+    .chapter-on .pipeline-card-badge { align-self: flex-start; margin-top: 24px; font-size: 12px; }
+
+    .chapter-on .pipeline-card::after {
+      content: attr(data-step);
+      position: absolute;
+      right: 28px;
+      bottom: -48px;
+      z-index: -1;
+      font-family: var(--serif);
+      font-size: 240px;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(212, 168, 75, 0.16);
+      pointer-events: none;
+      translate: 0 calc(var(--cy, 0px) * -0.8);
+    }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .hero-grid {
@@ -673,13 +1145,16 @@
       .pw-stage {
         white-space: nowrap;
         padding: 12px 14px;
-        border-right: none !important;
-        border-bottom: 2px solid transparent;
       }
 
-      .pw-stage.active {
-        border-bottom-color: var(--accent);
-        border-right: none;
+      .pw-indicator {
+        top: auto;
+        bottom: 0;
+        width: var(--iw, 80px);
+        height: 2px;
+        transform: translate3d(var(--ix, 0), 0, 0);
+        background: var(--accent);
+        border-right: 0;
       }
 
       .pw-stage.gate::after { display: none; }
@@ -703,6 +1178,8 @@
         gap: 16px;
       }
 
+      .nav-links .lang-toggle { align-self: flex-start; }
+
       .mobile-toggle { display: block; }
 
       .pipeline-grid,
@@ -718,6 +1195,28 @@
 
       .case-header { flex-direction: column; align-items: flex-start; }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+
+      .js [data-reveal],
+      .js [data-split] .w > span,
+      .js .diff-card-icon svg > * {
+        opacity: 1 !important;
+        translate: none !important;
+        scale: none !important;
+        stroke-dashoffset: 0 !important;
+        transition: none !important;
+      }
+
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+      }
+
+      .hero-glow, .install-box::before { animation: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -728,61 +1227,70 @@
       <a href="#" class="nav-brand">land<span>able</span></a>
       <button class="mobile-toggle" aria-label="Toggle navigation" aria-expanded="false" id="navToggle">&#9776;</button>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#pipeline">Pipeline</a></li>
-        <li><a href="#approach">Approach</a></li>
-        <li><a href="#results">Results</a></li>
-        <li><a href="#install" class="nav-cta">Get Started</a></li>
+        <li><a href="#pipeline" data-i18n="nav_pipeline">Pipeline</a></li>
+        <li><a href="#approach" data-i18n="nav_approach">Approach</a></li>
+        <li><a href="#results" data-i18n="nav_results">Results</a></li>
+        <li><a href="#install" class="nav-cta" data-i18n="nav_cta">Get Started</a></li>
+        <li>
+          <div class="lang-toggle" role="group" aria-label="Language">
+            <button class="active" data-lang="en">EN</button>
+            <button data-lang="zh">中</button>
+          </div>
+        </li>
       </ul>
     </div>
+    <div class="scroll-progress" aria-hidden="true"></div>
   </nav>
 
   <!-- Hero -->
-  <section class="hero">
+  <section class="hero" id="top">
+    <div class="hero-glow" aria-hidden="true"></div>
     <div class="container">
       <div class="hero-grid">
-        <div>
-          <h1 class="hero-tagline">The patch is rarely the hard part — <em>knowing where it can land</em> is.</h1>
-          <p class="hero-desc">landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.</p>
-          <div class="hero-actions">
-            <a href="#pipeline" class="btn-primary">See how it works</a>
+        <div class="hero-copy">
+          <h1 class="hero-tagline" data-reveal="0" data-split data-i18n="hero_tagline">The patch is rarely the hard part — <em>knowing where it can land</em> is.</h1>
+          <p class="hero-desc" data-reveal="5" data-i18n="hero_desc">landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.</p>
+          <div class="hero-actions" data-reveal="6">
+            <a href="#pipeline" class="btn-primary" data-i18n="hero_cta_primary">See how it works</a>
             <a href="https://github.com/Momoyeyu/landable" class="btn-secondary">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-              View on GitHub
+              <span data-i18n="hero_cta_github">View on GitHub</span>
             </a>
           </div>
         </div>
 
         <!-- Interactive Pipeline Widget -->
-        <div class="pipeline-widget" role="region" aria-label="Pipeline demonstration">
+        <div class="pipeline-widget" data-reveal="4" role="region" aria-label="Pipeline demonstration">
           <div class="pw-titlebar">
             <div class="pw-dot"></div>
             <div class="pw-dot"></div>
             <div class="pw-dot"></div>
             <span class="pw-title">landable workspace</span>
+            <span class="pw-timer" aria-hidden="true"></span>
           </div>
           <div class="pw-body">
             <div class="pw-sidebar" role="tablist" aria-label="Pipeline stages">
-              <button class="pw-stage active" role="tab" aria-selected="true" data-stage="0">
-                <span class="pw-stage-num">1</span> Profile
+              <span class="pw-indicator" aria-hidden="true"></span>
+              <button class="pw-stage active" role="tab" aria-selected="true" data-stage="0" data-gate-label="">
+                <span class="pw-stage-num">1</span> <span data-i18n="pw_s1">Profile</span>
               </button>
-              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="1">
-                <span class="pw-stage-num">2</span> Scout
+              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="1" data-gate-label="gate">
+                <span class="pw-stage-num">2</span> <span data-i18n="pw_s2">Scout</span>
               </button>
-              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="2">
-                <span class="pw-stage-num">3</span> Assess
+              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="2" data-gate-label="gate">
+                <span class="pw-stage-num">3</span> <span data-i18n="pw_s3">Assess</span>
               </button>
-              <button class="pw-stage" role="tab" aria-selected="false" data-stage="3">
-                <span class="pw-stage-num">4</span> Implement
+              <button class="pw-stage" role="tab" aria-selected="false" data-stage="3" data-gate-label="">
+                <span class="pw-stage-num">4</span> <span data-i18n="pw_s4">Implement</span>
               </button>
-              <button class="pw-stage" role="tab" aria-selected="false" data-stage="4">
-                <span class="pw-stage-num">5</span> Ship
+              <button class="pw-stage" role="tab" aria-selected="false" data-stage="4" data-gate-label="">
+                <span class="pw-stage-num">5</span> <span data-i18n="pw_s5">Ship</span>
               </button>
-              <button class="pw-stage" role="tab" aria-selected="false" data-stage="5">
-                <span class="pw-stage-num">6</span> Track
+              <button class="pw-stage" role="tab" aria-selected="false" data-stage="5" data-gate-label="">
+                <span class="pw-stage-num">6</span> <span data-i18n="pw_s6">Track</span>
               </button>
             </div>
             <div class="pw-content" role="tabpanel" id="pwPanel">
-              <!-- Filled by JS -->
             </div>
           </div>
         </div>
@@ -792,103 +1300,115 @@
 
   <!-- Pipeline Section -->
   <section class="pipeline-section" id="pipeline">
-    <div class="container">
-      <p class="section-label">The Pipeline</p>
-      <h2 class="section-title">Six stages, two decisions</h2>
-      <p class="section-desc">You pick what to work on and approve what gets published. Between those gates, the agent is autonomous.</p>
+    <div class="pipeline-chapter">
+    <div class="container chapter-stage">
+      <div class="chapter-copy">
+      <p class="section-label" data-reveal data-i18n="pipe_label">The Pipeline</p>
+      <h2 class="section-title" data-reveal data-split data-i18n="pipe_title">Six stages, two decisions</h2>
+      <p class="section-desc" data-reveal data-i18n="pipe_desc">You pick what to work on and approve what gets published. Between those gates, the agent is autonomous.</p>
+      <ol class="chapter-rail" data-reveal aria-label="Pipeline stages">
+        <li class="rail-item"><button type="button" data-rail="0"><span class="rail-num">01</span><span data-i18n="pw_s1">Profile</span></button></li>
+        <li class="rail-item"><button type="button" data-rail="1"><span class="rail-num">02</span><span data-i18n="pw_s2">Scout</span><span class="rail-gate" data-i18n="pw_gate">gate</span></button></li>
+        <li class="rail-item"><button type="button" data-rail="2"><span class="rail-num">03</span><span data-i18n="pw_s3">Assess</span><span class="rail-gate" data-i18n="pw_gate">gate</span></button></li>
+        <li class="rail-item"><button type="button" data-rail="3"><span class="rail-num">04</span><span data-i18n="pw_s4">Implement</span></button></li>
+        <li class="rail-item"><button type="button" data-rail="4"><span class="rail-num">05</span><span data-i18n="pw_s5">Ship</span></button></li>
+        <li class="rail-item"><button type="button" data-rail="5"><span class="rail-num">06</span><span data-i18n="pw_s6">Track</span></button></li>
+      </ol>
+      </div>
 
       <div class="pipeline-grid">
-        <div class="pipeline-card">
+        <div class="pipeline-card spot" data-step="01" data-reveal>
           <div class="pipeline-card-header">
             <span class="pipeline-card-num">1</span>
-            <h3 class="pipeline-card-title">Profile</h3>
+            <h3 class="pipeline-card-title" data-i18n="pipe_c1_title">Profile</h3>
           </div>
-          <p class="pipeline-card-desc">Builds an interest card — domains, languages, layer preference — and a capability card for available hardware. Your profile shapes every downstream decision.</p>
+          <p class="pipeline-card-desc" data-i18n="pipe_c1_desc">Builds an interest card — domains, languages, layer preference — and a capability card for available hardware. Your profile shapes every downstream decision.</p>
         </div>
 
-        <div class="pipeline-card">
+        <div class="pipeline-card spot" data-step="02" data-reveal>
           <div class="pipeline-card-header">
             <span class="pipeline-card-num">2</span>
-            <h3 class="pipeline-card-title">Scout</h3>
+            <h3 class="pipeline-card-title" data-i18n="pipe_c2_title">Scout</h3>
           </div>
-          <p class="pipeline-card-desc">Fetches GitHub Trending within your star range, filters by interest fit, and returns a ranked candidate table with a flagged watch list just over the range.</p>
-          <span class="pipeline-card-badge">Gate 1 — you pick repos</span>
+          <p class="pipeline-card-desc" data-i18n="pipe_c2_desc">Fetches GitHub Trending within your star range, filters by interest fit, and returns a ranked candidate table with a flagged watch list just over the range.</p>
+          <span class="pipeline-card-badge" data-i18n="pipe_c2_badge">Gate 1 — you pick repos</span>
         </div>
 
-        <div class="pipeline-card">
+        <div class="pipeline-card spot" data-step="03" data-reveal>
           <div class="pipeline-card-header">
             <span class="pipeline-card-num">3</span>
-            <h3 class="pipeline-card-title">Assess</h3>
+            <h3 class="pipeline-card-title" data-i18n="pipe_c3_title">Assess</h3>
           </div>
-          <p class="pipeline-card-desc">Probes each repo's real openness: who gets merged, whether issues get replies, whether the fix lives in that repo or a dependency, and whether the scope is feasible.</p>
-          <span class="pipeline-card-badge">Gate 2 — you pick issues</span>
+          <p class="pipeline-card-desc" data-i18n="pipe_c3_desc">Probes each repo's real openness: who gets merged, whether issues get replies, whether the fix lives in that repo or a dependency, and whether the scope is feasible.</p>
+          <span class="pipeline-card-badge" data-i18n="pipe_c3_badge">Gate 2 — you pick issues</span>
         </div>
 
-        <div class="pipeline-card">
+        <div class="pipeline-card spot" data-step="04" data-reveal>
           <div class="pipeline-card-header">
             <span class="pipeline-card-num">4</span>
-            <h3 class="pipeline-card-title">Implement</h3>
+            <h3 class="pipeline-card-title" data-i18n="pipe_c4_title">Implement</h3>
           </div>
-          <p class="pipeline-card-desc">Forks the repo, claims the issue with a comment, writes the fix and a regression test, runs the project's own test and lint gates. Nothing is pushed yet.</p>
+          <p class="pipeline-card-desc" data-i18n="pipe_c4_desc">Forks the repo, claims the issue with a comment, writes the fix and a regression test, runs the project's own test and lint gates. Nothing is pushed yet.</p>
         </div>
 
-        <div class="pipeline-card">
+        <div class="pipeline-card spot" data-step="05" data-reveal>
           <div class="pipeline-card-header">
             <span class="pipeline-card-num">5</span>
-            <h3 class="pipeline-card-title">Ship</h3>
+            <h3 class="pipeline-card-title" data-i18n="pipe_c5_title">Ship</h3>
           </div>
-          <p class="pipeline-card-desc">Pushes branches, opens PRs on the correct base branch respecting each repo's CONTRIBUTING.md and AGENTS.md rules, fills PR templates honestly.</p>
+          <p class="pipeline-card-desc" data-i18n="pipe_c5_desc">Pushes branches, opens PRs on the correct base branch respecting each repo's CONTRIBUTING.md and AGENTS.md rules, fills PR templates honestly.</p>
         </div>
 
-        <div class="pipeline-card">
+        <div class="pipeline-card spot" data-step="06" data-reveal>
           <div class="pipeline-card-header">
             <span class="pipeline-card-num">6</span>
-            <h3 class="pipeline-card-title">Track</h3>
+            <h3 class="pipeline-card-title" data-i18n="pipe_c6_title">Track</h3>
           </div>
-          <p class="pipeline-card-desc">Monitors CI, diagnoses failures, follows up on maintainer review comments. Reports terminal status honestly — merged, closed-with-reason, or parked.</p>
+          <p class="pipeline-card-desc" data-i18n="pipe_c6_desc">Monitors CI, diagnoses failures, follows up on maintainer review comments. Reports terminal status honestly — merged, closed-with-reason, or parked.</p>
         </div>
       </div>
+    </div>
     </div>
   </section>
 
   <!-- Differentiators -->
   <section class="diff-section" id="approach">
     <div class="container">
-      <p class="section-label">The Approach</p>
-      <h2 class="section-title">What most tools skip</h2>
-      <p class="section-desc">The interesting stage isn't implementation — it's assessment. landable checks things agents usually don't.</p>
+      <p class="section-label" data-reveal data-i18n="diff_label">The Approach</p>
+      <h2 class="section-title" data-reveal data-split data-i18n="diff_title">What most tools skip</h2>
+      <p class="section-desc" data-reveal data-i18n="diff_desc">The interesting stage isn't implementation — it's assessment. landable checks things agents usually don't.</p>
 
       <div class="diff-grid">
-        <div class="diff-card">
+        <div class="diff-card spot" data-reveal>
           <div class="diff-card-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
-          <h3 class="diff-card-title">Acceptance probing</h3>
-          <p class="diff-card-desc">Samples recent merged PRs by authorAssociation. A repo where every merge is OWNER or MEMBER is a closed club — no matter how good the issues look. landable checks before you commit time.</p>
+          <h3 class="diff-card-title" data-i18n="diff_c1_title">Acceptance probing</h3>
+          <p class="diff-card-desc" data-i18n="diff_c1_desc">Samples recent merged PRs by authorAssociation. A repo where every merge is OWNER or MEMBER is a closed club — no matter how good the issues look. landable checks before you commit time.</p>
         </div>
 
-        <div class="diff-card">
+        <div class="diff-card spot" data-reveal>
           <div class="diff-card-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
           </div>
-          <h3 class="diff-card-title">Dependency-aware targeting</h3>
-          <p class="diff-card-desc">Bugs surface in one repo but root in its dependencies. The agent follows imports before committing to a target — fixing the actual cause, not the reported symptom.</p>
+          <h3 class="diff-card-title" data-i18n="diff_c2_title">Dependency-aware targeting</h3>
+          <p class="diff-card-desc" data-i18n="diff_c2_desc">Bugs surface in one repo but root in its dependencies. The agent follows imports before committing to a target — fixing the actual cause, not the reported symptom.</p>
         </div>
 
-        <div class="diff-card">
+        <div class="diff-card spot" data-reveal>
           <div class="diff-card-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
-          <h3 class="diff-card-title">Claim detection</h3>
-          <p class="diff-card-desc">Detects soft claims ("I'll work on this"), assignees, linked PRs, and fork references to avoid racing claimed issues. Fast-moving queues get noted, not gamed.</p>
+          <h3 class="diff-card-title" data-i18n="diff_c3_title">Claim detection</h3>
+          <p class="diff-card-desc" data-i18n="diff_c3_desc">Detects soft claims ("I'll work on this"), assignees, linked PRs, and fork references to avoid racing claimed issues. Fast-moving queues get noted, not gamed.</p>
         </div>
 
-        <div class="diff-card">
+        <div class="diff-card spot" data-reveal>
           <div class="diff-card-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           </div>
-          <h3 class="diff-card-title">Rules compliance</h3>
-          <p class="diff-card-desc">Reads CONTRIBUTING.md, AGENTS.md, and PR templates before anything is written. Base branch, sign-off, commit signing, changelog format — the repo's own rules always win.</p>
+          <h3 class="diff-card-title" data-i18n="diff_c4_title">Rules compliance</h3>
+          <p class="diff-card-desc" data-i18n="diff_c4_desc">Reads CONTRIBUTING.md, AGENTS.md, and PR templates before anything is written. Base branch, sign-off, commit signing, changelog format — the repo's own rules always win.</p>
         </div>
       </div>
     </div>
@@ -897,54 +1417,54 @@
   <!-- Case Studies -->
   <section class="cases-section" id="results">
     <div class="container">
-      <p class="section-label">Results</p>
-      <h2 class="section-title">Does it land?</h2>
-      <p class="section-desc">Real issues carried through to merged PRs. Only merged ones are listed — an open PR is never reported as done.</p>
+      <p class="section-label" data-reveal data-i18n="case_label">Results</p>
+      <h2 class="section-title" data-reveal data-split data-i18n="case_title">Does it land?</h2>
+      <p class="section-desc" data-reveal data-i18n="case_desc">Real issues carried through to merged PRs. Only merged ones are listed — an open PR is never reported as done.</p>
 
       <div class="case-list">
-        <article class="case-item">
+        <article class="case-item spot" data-reveal>
           <div class="case-header">
             <span class="case-repo">kvcache-ai/sglang</span>
-            <span class="case-status">Merged</span>
+            <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary">Bug filed in ktransformers, traced via imports to this sibling repo. GLM-4.5 MoE configs silently fell back to wrong rope_theta under Transformers 5. Patch resolved both fields through get_rope_config with a regression test.</p>
-          <p class="case-detail">PR #100 — fixing ktransformers#2214 — bug filed in one repo, fixed in its sibling</p>
+          <p class="case-summary" data-i18n="case_c1_summary">Bug filed in ktransformers, traced via imports to this sibling repo. GLM-4.5 MoE configs silently fell back to wrong rope_theta under Transformers 5. Patch resolved both fields through get_rope_config with a regression test.</p>
+          <p class="case-detail" data-i18n="case_c1_detail">PR #100 — fixing ktransformers#2214 — bug filed in one repo, fixed in its sibling</p>
         </article>
 
-        <article class="case-item">
+        <article class="case-item spot" data-reveal>
           <div class="case-header">
             <span class="case-repo">Tencent-Hunyuan/UniRL</span>
-            <span class="case-status">Merged</span>
+            <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary">Three uncalled helpers deleted from the sharded-state path. They selected tensors by key substring, so frozen teacher adapters could have silently leaked weights into student exports. Merged the day it opened.</p>
-          <p class="case-detail">PR #530, fixing #514 — merged the day it opened</p>
+          <p class="case-summary" data-i18n="case_c2_summary">Three uncalled helpers deleted from the sharded-state path. They selected tensors by key substring, so frozen teacher adapters could have silently leaked weights into student exports. Merged the day it opened.</p>
+          <p class="case-detail" data-i18n="case_c2_detail">PR #530, fixing #514 — merged the day it opened</p>
         </article>
 
-        <article class="case-item">
+        <article class="case-item spot" data-reveal>
           <div class="case-header">
             <span class="case-repo">Tencent-Hunyuan/UniRL</span>
-            <span class="case-status">Merged</span>
+            <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary">SDE strategy's log_prob returned only the squared term, but the SGLang adapter never set the no-constant flag on the SDE path. The two sides of the ratio were scoring different quantities. Fixed by declaring log_prob_no_const per strategy.</p>
-          <p class="case-detail">PR #536, fixing #533 — the two sides of the ratio were scoring different quantities</p>
+          <p class="case-summary" data-i18n="case_c3_summary">SDE strategy's log_prob returned only the squared term, but the SGLang adapter never set the no-constant flag on the SDE path. The two sides of the ratio were scoring different quantities. Fixed by declaring log_prob_no_const per strategy.</p>
+          <p class="case-detail" data-i18n="case_c3_detail">PR #536, fixing #533 — the two sides of the ratio were scoring different quantities</p>
         </article>
 
-        <article class="case-item">
+        <article class="case-item spot" data-reveal>
           <div class="case-header">
             <span class="case-repo">MakazhanAlpamys/Soup</span>
-            <span class="case-status">Merged</span>
+            <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary">Streamed test builders hardcoded cuda or cpu, causing device mismatch on Apple Silicon. One helper in conftest un-skipped 32 test cases — all pass. Verified on M3 Ultra (29,080 tests) and CUDA.</p>
-          <p class="case-detail">PR #1375, fixing #1355 — 32 skipped cases brought back</p>
+          <p class="case-summary" data-i18n="case_c4_summary">Streamed test builders hardcoded cuda or cpu, causing device mismatch on Apple Silicon. One helper in conftest un-skipped 32 test cases — all pass. Verified on M3 Ultra (29,080 tests) and CUDA.</p>
+          <p class="case-detail" data-i18n="case_c4_detail">PR #1375, fixing #1355 — 32 skipped cases brought back</p>
         </article>
 
-        <article class="case-item">
+        <article class="case-item spot" data-reveal>
           <div class="case-header">
             <span class="case-repo">MakazhanAlpamys/Soup</span>
-            <span class="case-status">Merged</span>
+            <span class="case-status" data-i18n="case_merged">Merged</span>
           </div>
-          <p class="case-summary">The reasoning data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can't read. The prompt now names the markers the rewards parse. Re-scoped mid-flight per maintainer feedback.</p>
-          <p class="case-detail">PR #1471, fixing #1349 — scope narrowed to what review actually wanted</p>
+          <p class="case-summary" data-i18n="case_c5_summary">The reasoning data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can't read. The prompt now names the markers the rewards parse. Re-scoped mid-flight per maintainer feedback.</p>
+          <p class="case-detail" data-i18n="case_c5_detail">PR #1471, fixing #1349 — scope narrowed to what review actually wanted</p>
         </article>
       </div>
     </div>
@@ -953,113 +1473,369 @@
   <!-- Install -->
   <section class="install-section" id="install">
     <div class="container">
-      <p class="section-label">Get Started</p>
-      <h2 class="section-title">Install the skill</h2>
-      <p class="section-desc">One command. Then ask for repos in your interest area — landable handles the rest, pausing at each gate for your decision.</p>
+      <p class="section-label" data-reveal data-i18n="install_label">Get Started</p>
+      <h2 class="section-title" data-reveal data-split data-i18n="install_title">Install the skill</h2>
+      <p class="section-desc" data-reveal data-i18n="install_desc">One command. Then ask for repos in your interest area — landable handles the rest, pausing at each gate for your decision.</p>
 
-      <div class="install-box">
+      <div class="install-box" data-reveal>
         <code class="install-code" id="installCode">npx skills add Momoyeyu/landable -g</code>
         <button class="install-copy" aria-label="Copy install command" id="copyBtn" title="Copy to clipboard">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
       </div>
 
-      <p class="install-hint">Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.</p>
+      <p class="install-hint" data-reveal data-i18n="install_hint">Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.</p>
     </div>
   </section>
 
   <!-- Footer -->
   <footer>
     <div class="container footer-inner">
-      <p class="footer-left">landable &middot; MIT License &middot; by Momoyeyu</p>
+      <p class="footer-left" data-i18n="footer_left">landable &middot; MIT License &middot; by Momoyeyu</p>
       <ul class="footer-links">
         <li><a href="https://github.com/Momoyeyu/landable">GitHub</a></li>
-        <li><a href="https://github.com/Momoyeyu/landable/blob/master/landable/SKILL.md">Skill Docs</a></li>
-        <li><a href="https://github.com/Momoyeyu/landable/blob/master/LICENSE">License</a></li>
+        <li><a href="https://github.com/Momoyeyu/landable/blob/master/landable/SKILL.md" data-i18n="footer_docs">Skill Docs</a></li>
+        <li><a href="https://github.com/Momoyeyu/landable/blob/master/LICENSE" data-i18n="footer_license">License</a></li>
       </ul>
     </div>
   </footer>
 
   <script>
-    // Pipeline widget data
-    const stages = [
-      {
-        title: 'Profile',
-        desc: 'Building your interest card from your domains, languages, and hardware capabilities.',
-        steps: [
-          { text: 'Parsing technical interests: AI infra, CUDA, Python tooling', state: 'done' },
-          { text: 'Detecting available hardware: Apple Silicon + CUDA GPU', state: 'done' },
-          { text: 'Layer preference: systems, frameworks, tooling', state: 'done' },
-          { text: 'Profile card saved to ~/.config/landable/', state: 'done' },
+    /* ── i18n ── */
+    var i18n = {
+      en: {
+        nav_pipeline: 'Pipeline',
+        nav_approach: 'Approach',
+        nav_results: 'Results',
+        nav_cta: 'Get Started',
+
+        hero_tagline: 'The patch is rarely the hard part — <em>knowing where it can land</em> is.',
+        hero_desc: 'landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.',
+        hero_cta_primary: 'See how it works',
+        hero_cta_github: 'View on GitHub',
+
+        pw_s1: 'Profile', pw_s2: 'Scout', pw_s3: 'Assess',
+        pw_s4: 'Implement', pw_s5: 'Ship', pw_s6: 'Track',
+        pw_gate: 'gate',
+        pw_workspace: 'landable workspace',
+
+        pipe_label: 'The Pipeline',
+        pipe_title: 'Six stages, two decisions',
+        pipe_desc: 'You pick what to work on and approve what gets published. Between those gates, the agent is autonomous.',
+        pipe_c1_title: 'Profile',
+        pipe_c1_desc: 'Builds an interest card — domains, languages, layer preference — and a capability card for available hardware. Your profile shapes every downstream decision.',
+        pipe_c2_title: 'Scout',
+        pipe_c2_desc: 'Fetches GitHub Trending within your star range, filters by interest fit, and returns a ranked candidate table with a flagged watch list just over the range.',
+        pipe_c2_badge: 'Gate 1 — you pick repos',
+        pipe_c3_title: 'Assess',
+        pipe_c3_desc: "Probes each repo's real openness: who gets merged, whether issues get replies, whether the fix lives in that repo or a dependency, and whether the scope is feasible.",
+        pipe_c3_badge: 'Gate 2 — you pick issues',
+        pipe_c4_title: 'Implement',
+        pipe_c4_desc: "Forks the repo, claims the issue with a comment, writes the fix and a regression test, runs the project's own test and lint gates. Nothing is pushed yet.",
+        pipe_c5_title: 'Ship',
+        pipe_c5_desc: "Pushes branches, opens PRs on the correct base branch respecting each repo's CONTRIBUTING.md and AGENTS.md rules, fills PR templates honestly.",
+        pipe_c6_title: 'Track',
+        pipe_c6_desc: 'Monitors CI, diagnoses failures, follows up on maintainer review comments. Reports terminal status honestly — merged, closed-with-reason, or parked.',
+
+        diff_label: 'The Approach',
+        diff_title: 'What most tools skip',
+        diff_desc: "The interesting stage isn't implementation — it's assessment. landable checks things agents usually don't.",
+        diff_c1_title: 'Acceptance probing',
+        diff_c1_desc: 'Samples recent merged PRs by authorAssociation. A repo where every merge is OWNER or MEMBER is a closed club — no matter how good the issues look. landable checks before you commit time.',
+        diff_c2_title: 'Dependency-aware targeting',
+        diff_c2_desc: 'Bugs surface in one repo but root in its dependencies. The agent follows imports before committing to a target — fixing the actual cause, not the reported symptom.',
+        diff_c3_title: 'Claim detection',
+        diff_c3_desc: 'Detects soft claims ("I\'ll work on this"), assignees, linked PRs, and fork references to avoid racing claimed issues. Fast-moving queues get noted, not gamed.',
+        diff_c4_title: 'Rules compliance',
+        diff_c4_desc: "Reads CONTRIBUTING.md, AGENTS.md, and PR templates before anything is written. Base branch, sign-off, commit signing, changelog format — the repo's own rules always win.",
+
+        case_label: 'Results',
+        case_title: 'Does it land?',
+        case_desc: 'Real issues carried through to merged PRs. Only merged ones are listed — an open PR is never reported as done.',
+        case_merged: 'Merged',
+        case_c1_summary: 'Bug filed in ktransformers, traced via imports to this sibling repo. GLM-4.5 MoE configs silently fell back to wrong rope_theta under Transformers 5. Patch resolved both fields through get_rope_config with a regression test.',
+        case_c1_detail: 'PR #100 — fixing ktransformers#2214 — bug filed in one repo, fixed in its sibling',
+        case_c2_summary: 'Three uncalled helpers deleted from the sharded-state path. They selected tensors by key substring, so frozen teacher adapters could have silently leaked weights into student exports. Merged the day it opened.',
+        case_c2_detail: 'PR #530, fixing #514 — merged the day it opened',
+        case_c3_summary: "SDE strategy's log_prob returned only the squared term, but the SGLang adapter never set the no-constant flag on the SDE path. The two sides of the ratio were scoring different quantities. Fixed by declaring log_prob_no_const per strategy.",
+        case_c3_detail: 'PR #536, fixing #533 — the two sides of the ratio were scoring different quantities',
+        case_c4_summary: 'Streamed test builders hardcoded cuda or cpu, causing device mismatch on Apple Silicon. One helper in conftest un-skipped 32 test cases — all pass. Verified on M3 Ultra (29,080 tests) and CUDA.',
+        case_c4_detail: 'PR #1375, fixing #1355 — 32 skipped cases brought back',
+        case_c5_summary: 'The reasoning data template asked for a "final answer" with no parseable form, so generated rows could ship golds the reward path can\'t read. The prompt now names the markers the rewards parse. Re-scoped mid-flight per maintainer feedback.',
+        case_c5_detail: 'PR #1471, fixing #1349 — scope narrowed to what review actually wanted',
+
+        install_label: 'Get Started',
+        install_title: 'Install the skill',
+        install_desc: 'One command. Then ask for repos in your interest area — landable handles the rest, pausing at each gate for your decision.',
+        install_hint: 'Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.',
+
+        footer_left: 'landable &middot; MIT License &middot; by Momoyeyu',
+        footer_docs: 'Skill Docs',
+        footer_license: 'License',
+
+        stages: [
+          {
+            title: 'Profile',
+            desc: 'Building your interest card from your domains, languages, and hardware capabilities.',
+            steps: [
+              { text: 'Parsing technical interests: AI infra, CUDA, Python tooling', state: 'done' },
+              { text: 'Detecting available hardware: Apple Silicon + CUDA GPU', state: 'done' },
+              { text: 'Layer preference: systems, frameworks, tooling', state: 'done' },
+              { text: 'Profile card saved to ~/.config/landable/', state: 'done' }
+            ]
+          },
+          {
+            title: 'Scout',
+            desc: 'Fetching GitHub Trending and ranking repos by interest fit within your star range.',
+            steps: [
+              { text: 'Fetched daily + weekly trending from GitHub', state: 'done' },
+              { text: 'Filtered: 0–10,000 stars, matching interest domains', state: 'done' },
+              { text: 'Ranked 12 candidates by profile fit score', state: 'done' },
+              { text: 'Awaiting your selection — Gate 1', state: 'current' }
+            ]
+          },
+          {
+            title: 'Assess',
+            desc: "Probing each selected repo for real openness and actionable issues.",
+            steps: [
+              { text: 'Checking authorAssociation on merged PRs...', state: 'done' },
+              { text: 'Verifying: 34% external merges — repo is open', state: 'done' },
+              { text: 'Following imports: bug roots in this repo, confirmed', state: 'done' },
+              { text: 'Scanning for claims: no assignees, no linked PRs', state: 'current' },
+              { text: 'Awaiting your issue selection — Gate 2', state: 'pending' }
+            ]
+          },
+          {
+            title: 'Implement',
+            desc: 'Forking, claiming the issue, writing the fix and regression test.',
+            steps: [
+              { text: 'Forked repo and cloned locally', state: 'done' },
+              { text: 'Claimed issue with assignment comment', state: 'done' },
+              { text: 'Implemented fix on feature branch', state: 'done' },
+              { text: 'Wrote regression test — passes on new code, fails on old', state: 'done' },
+              { text: 'Running repo test suite and lint gates', state: 'current' }
+            ]
+          },
+          {
+            title: 'Ship',
+            desc: "Pushing branches and opening PRs following each repo's contribution rules.",
+            steps: [
+              { text: 'Read CONTRIBUTING.md: base branch = main, requires sign-off', state: 'done' },
+              { text: 'Pushed feature branch to fork', state: 'done' },
+              { text: 'Opened PR with DCO sign-off and conventional commit', state: 'done' },
+              { text: 'Filled PR template — linked issue, described reproduction', state: 'current' },
+              { text: 'Awaiting CI results', state: 'pending' }
+            ]
+          },
+          {
+            title: 'Track',
+            desc: 'Monitoring CI, handling review feedback, reporting final status.',
+            steps: [
+              { text: 'CI passed: tests green, lint clean', state: 'done' },
+              { text: 'Maintainer review: requested one change', state: 'done' },
+              { text: 'Addressed feedback, pushed update', state: 'done' },
+              { text: 'Review approved', state: 'done' },
+              { text: 'Merged — terminal status reported', state: 'done' }
+            ]
+          }
         ]
       },
-      {
-        title: 'Scout',
-        desc: 'Fetching GitHub Trending and ranking repos by interest fit within your star range.',
-        steps: [
-          { text: 'Fetched daily + weekly trending from GitHub', state: 'done' },
-          { text: 'Filtered: 0–10,000 stars, matching interest domains', state: 'done' },
-          { text: 'Ranked 12 candidates by profile fit score', state: 'done' },
-          { text: 'Awaiting your selection — Gate 1', state: 'current' },
-        ]
-      },
-      {
-        title: 'Assess',
-        desc: 'Probing each selected repo for real openness and actionable issues.',
-        steps: [
-          { text: 'Checking authorAssociation on merged PRs...', state: 'done' },
-          { text: 'Verifying: 34% external merges — repo is open', state: 'done' },
-          { text: 'Following imports: bug roots in this repo, confirmed', state: 'done' },
-          { text: 'Scanning for claims: no assignees, no linked PRs', state: 'current' },
-          { text: 'Awaiting your issue selection — Gate 2', state: 'pending' },
-        ]
-      },
-      {
-        title: 'Implement',
-        desc: 'Forking, claiming the issue, writing the fix and regression test.',
-        steps: [
-          { text: 'Forked repo and cloned locally', state: 'done' },
-          { text: 'Claimed issue with assignment comment', state: 'done' },
-          { text: 'Implemented fix on feature branch', state: 'done' },
-          { text: 'Wrote regression test — passes on new code, fails on old', state: 'done' },
-          { text: 'Running repo test suite and lint gates', state: 'current' },
-        ]
-      },
-      {
-        title: 'Ship',
-        desc: 'Pushing branches and opening PRs following each repo\'s contribution rules.',
-        steps: [
-          { text: 'Read CONTRIBUTING.md: base branch = main, requires sign-off', state: 'done' },
-          { text: 'Pushed feature branch to fork', state: 'done' },
-          { text: 'Opened PR with DCO sign-off and conventional commit', state: 'done' },
-          { text: 'Filled PR template — linked issue, described reproduction', state: 'current' },
-          { text: 'Awaiting CI results', state: 'pending' },
-        ]
-      },
-      {
-        title: 'Track',
-        desc: 'Monitoring CI, handling review feedback, reporting final status.',
-        steps: [
-          { text: 'CI passed: tests green, lint clean', state: 'done' },
-          { text: 'Maintainer review: requested one change', state: 'done' },
-          { text: 'Addressed feedback, pushed update', state: 'done' },
-          { text: 'Review approved', state: 'done' },
-          { text: 'Merged — terminal status reported', state: 'done' },
+
+      zh: {
+        nav_pipeline: '流程',
+        nav_approach: '思路',
+        nav_results: '实战',
+        nav_cta: '开始使用',
+
+        hero_tagline: '难的从来不是写代码——<em>找对地方投</em>才是。',
+        hero_desc: 'Landable 帮你从发现项目到 PR 合并，跑完整个开源贡献流程。你只需要在两个关键节点拍板。',
+        hero_cta_primary: '看看怎么运作',
+        hero_cta_github: '前往 GitHub',
+
+        pw_s1: '画像', pw_s2: '发现', pw_s3: '评估',
+        pw_s4: '实现', pw_s5: '投递', pw_s6: '跟踪',
+        pw_gate: '决策点',
+        pw_workspace: 'landable 工作区',
+
+        pipe_label: '流程',
+        pipe_title: '六个阶段，两次拍板',
+        pipe_desc: '选什么课题、投什么代码——你说了算。中间的事，Agent 自己搞定。',
+        pipe_c1_title: '画像',
+        pipe_c1_desc: '整理你的技术兴趣、语言偏好和硬件条件，生成一张专属画像。后续所有决策都基于它。',
+        pipe_c2_title: '发现',
+        pipe_c2_desc: '在你关注的星标区间内扫描 GitHub 热门项目，按兴趣匹配度排序，输出一份候选清单。',
+        pipe_c2_badge: '决策点 1 — 你来选仓库',
+        pipe_c3_title: '评估',
+        pipe_c3_desc: '逐个摸清项目的真实开放度：外人的 PR 能不能过、issue 有没有人理、修复到底该提到哪。',
+        pipe_c3_badge: '决策点 2 — 你来选 issue',
+        pipe_c4_title: '实现',
+        pipe_c4_desc: 'Fork、认领 issue、写修复和回归测试，跑通项目的 CI。代码不会提前推上去。',
+        pipe_c5_title: '投递',
+        pipe_c5_desc: '推分支、开 PR，严格遵守每个项目的贡献指南和 AGENTS.md。',
+        pipe_c6_title: '跟踪',
+        pipe_c6_desc: '盯 CI、处理维护者反馈、如实汇报结果——合并、关闭还是搁置，都有交代。',
+
+        diff_label: '思路',
+        diff_title: '别人不做的事',
+        diff_desc: '写代码不是难点，难的是动手前的调研。Landable 会替你看那些大多数 Agent 不看的东西。',
+        diff_c1_title: '先摸清门',
+        diff_c1_desc: '看看最近合并的 PR 都来自谁。如果一个仓库只接受 OWNER 和 MEMBER 的代码，那它对外人就是关着门的——不管 issue 写得多好。投之前先查清楚。',
+        diff_c2_title: '追根溯源',
+        diff_c2_desc: 'Bug 在 A 项目报的，根因可能在它的依赖 B 里。Agent 会顺着 import 链找到真正该修的地方，而不是头疼医头。',
+        diff_c3_title: '别跟人撞',
+        diff_c3_desc: '检测"我来做"之类的软认领、assignee、关联 PR 和 fork 引用，避开已经有人在做的 issue。',
+        diff_c4_title: '先读规矩',
+        diff_c4_desc: '动手之前先把 CONTRIBUTING.md、AGENTS.md 和 PR 模板读一遍。目标分支、签名方式、commit 格式、changelog 写法——按项目规矩来。',
+
+        case_label: '实战',
+        case_title: '能中吗？',
+        case_desc: '从 issue 到合并的完整记录。只列真正合并了的——没中的不算。',
+        case_merged: '已合并',
+        case_c1_summary: 'Bug 报在 ktransformers，顺着 import 追到了 sglang。GLM-4.5 MoE 在 Transformers 5 下 rope_theta 会悄悄回退到错误值。补丁通过 get_rope_config 一并修复，附回归测试。',
+        case_c1_detail: 'PR #100 — 修复 ktransformers#2214 — 一个仓库报的 bug，另一个仓库修的',
+        case_c2_summary: '清理了分片状态路径上三个没人调的辅助函数。它们按键名字符串选张量，有概率把冻结的 teacher 权重泄漏到 student 导出里。当天提当天合。',
+        case_c2_detail: 'PR #530，修复 #514 — 当天提当天合',
+        case_c3_summary: 'SDE 策略的 log_prob 只算了平方项，SGLang 适配器在 SDE 路径上又漏设了 no-constant 标志，导致比率两边算的不是同一个东西。给每个策略单独声明 log_prob_no_const 搞定。',
+        case_c3_detail: 'PR #536，修复 #533 — 比率两边算的不是一回事',
+        case_c4_summary: '测试构建器写死了 cuda 或 cpu，Apple Silicon 上直接设备不匹配。改了 conftest 里一个 helper，恢复 32 个被跳过的用例，全绿。M3 Ultra（29,080 个测试）和 CUDA 都跑过。',
+        case_c4_detail: 'PR #1375，修复 #1355 — 救回 32 个被跳过的测试',
+        case_c5_summary: '推理数据模板让模型输出"最终答案"，但没指定格式，奖励函数根本解析不了。改成输出奖励函数能认的标记。后来按维护者意见缩小了范围。',
+        case_c5_detail: 'PR #1471，修复 #1349 — 按评审意见缩小范围',
+
+        install_label: '开始使用',
+        install_title: '安装 Skill',
+        install_desc: '一条命令装好 Skill，然后告诉它你关注什么领域。剩下的它来——发现、评估、实现，到决策点再叫你。',
+        install_hint: '需要 Node.js 和 GitHub CLI（<code>gh</code>）。',
+
+        footer_left: 'landable &middot; MIT License &middot; by Momoyeyu',
+        footer_docs: 'Skill 文档',
+        footer_license: '许可证',
+
+        stages: [
+          {
+            title: '画像',
+            desc: '从你的技术兴趣、语言和硬件条件生成专属画像。',
+            steps: [
+              { text: '解析技术兴趣：AI infra、CUDA、Python 工具链', state: 'done' },
+              { text: '检测可用硬件：Apple Silicon + CUDA GPU', state: 'done' },
+              { text: '层级偏好：系统、框架、工具', state: 'done' },
+              { text: '画像已保存至 ~/.config/landable/', state: 'done' }
+            ]
+          },
+          {
+            title: '发现',
+            desc: '扫描 GitHub Trending，按兴趣匹配度排序。',
+            steps: [
+              { text: '已获取 GitHub 每日 + 每周趋势', state: 'done' },
+              { text: '已过滤：0–10,000 星标，匹配兴趣领域', state: 'done' },
+              { text: '按画像匹配度排序了 12 个候选', state: 'done' },
+              { text: '等你选仓库 — 决策点 1', state: 'current' }
+            ]
+          },
+          {
+            title: '评估',
+            desc: '逐个摸清选中项目的真实开放度和可操作的 issue。',
+            steps: [
+              { text: '正在检查已合并 PR 的 authorAssociation...', state: 'done' },
+              { text: '验证：34% 外部合并 — 仓库开放', state: 'done' },
+              { text: '追踪 import：bug 根因在此仓库，已确认', state: 'done' },
+              { text: '扫描认领状态：无 assignee，无关联 PR', state: 'current' },
+              { text: '等你选 issue — 决策点 2', state: 'pending' }
+            ]
+          },
+          {
+            title: '实现',
+            desc: 'Fork、认领 issue、写修复和回归测试。',
+            steps: [
+              { text: '已 Fork 并克隆到本地', state: 'done' },
+              { text: '已认领 issue 并留言', state: 'done' },
+              { text: '在功能分支上完成修复', state: 'done' },
+              { text: '回归测试通过 — 新代码过，旧代码挂', state: 'done' },
+              { text: '正在跑项目测试和 lint', state: 'current' }
+            ]
+          },
+          {
+            title: '投递',
+            desc: '推分支、按项目规矩开 PR。',
+            steps: [
+              { text: '已读 CONTRIBUTING.md：目标分支 = main，需要签名', state: 'done' },
+              { text: '已推送功能分支', state: 'done' },
+              { text: '已开 PR，附带 DCO 签名和规范化 commit', state: 'done' },
+              { text: '已填 PR 模板 — 关联 issue，描述复现步骤', state: 'current' },
+              { text: '等待 CI 结果', state: 'pending' }
+            ]
+          },
+          {
+            title: '跟踪',
+            desc: '盯 CI、处理评审反馈、汇报最终状态。',
+            steps: [
+              { text: 'CI 通过：测试全绿，lint 干净', state: 'done' },
+              { text: '维护者评审：请求一处修改', state: 'done' },
+              { text: '已处理反馈并推送更新', state: 'done' },
+              { text: '评审已通过', state: 'done' },
+              { text: '已合并 — 任务完成', state: 'done' }
+            ]
+          }
         ]
       }
-    ];
+    };
 
-    const stepIcons = { done: '&#10003;', current: '&#9679;', pending: '&#9675;' };
+    var currentLang = localStorage.getItem('landable-lang') || 'en';
+
+    function applyLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('landable-lang', lang);
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+      var t = i18n[lang];
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) {
+          if (key === 'hero_tagline' || key === 'install_hint' || key === 'footer_left') {
+            el.innerHTML = t[key];
+          } else {
+            el.textContent = t[key];
+          }
+        }
+      });
+
+      document.querySelectorAll('.pw-stage').forEach(function(btn) {
+        btn.setAttribute('data-gate-label', t.pw_gate);
+      });
+
+      var pwTitle = document.querySelector('.pw-title');
+      if (pwTitle) pwTitle.textContent = t.pw_workspace;
+
+      document.querySelectorAll('.lang-toggle button').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+
+      var activeStage = document.querySelector('.pw-stage.active');
+      if (activeStage) {
+        renderStage(parseInt(activeStage.dataset.stage));
+      }
+
+      afterLang();
+    }
+
+    document.querySelectorAll('.lang-toggle button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        applyLang(btn.getAttribute('data-lang'));
+      });
+    });
+
+    /* ── Pipeline Widget ── */
+    var stepIcons = { done: '&#10003;', current: '&#9679;', pending: '&#9675;' };
 
     function renderStage(idx) {
-      const s = stages[idx];
-      const panel = document.getElementById('pwPanel');
+      var s = i18n[currentLang].stages[idx];
+      var panel = document.getElementById('pwPanel');
       panel.innerHTML =
         '<h3 class="pw-content-title">' + s.title + '</h3>' +
         '<p class="pw-content-desc">' + s.desc + '</p>' +
         '<ul class="pw-steps">' +
-        s.steps.map(function(st) {
-          return '<li class="pw-step">' +
+        s.steps.map(function(st, i) {
+          return '<li class="pw-step" style="--si:' + i + '">' +
             '<span class="pw-step-icon ' + st.state + '">' + stepIcons[st.state] + '</span>' +
             '<span>' + st.text + '</span>' +
             '</li>';
@@ -1067,47 +1843,368 @@
         '</ul>';
     }
 
-    // Stage switching
-    document.querySelectorAll('.pw-stage').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.pw-stage').forEach(function(b) {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-        renderStage(parseInt(btn.dataset.stage));
+    /* Widget: sliding indicator, autoplay driven by the timer bar's own
+       animation (so CSS pause = timer pause), stops for good on user input. */
+    var widget = document.querySelector('.pipeline-widget');
+    var pwSidebar = document.querySelector('.pw-sidebar');
+    var pwIndicator = document.querySelector('.pw-indicator');
+    var pwTimer = document.querySelector('.pw-timer');
+    var stageBtns = Array.prototype.slice.call(document.querySelectorAll('.pw-stage'));
+    var currentStage = 0;
+    var autoplay = true;
+    var widgetHover = false, widgetFocus = false, widgetVisible = false;
+
+    function moveIndicator() {
+      var b = stageBtns[currentStage];
+      pwIndicator.style.setProperty('--ix', b.offsetLeft + 'px');
+      pwIndicator.style.setProperty('--iy', b.offsetTop + 'px');
+      pwIndicator.style.setProperty('--iw', b.offsetWidth + 'px');
+      pwIndicator.style.setProperty('--ih', b.offsetHeight + 'px');
+    }
+
+    function restartTimer() {
+      pwTimer.classList.remove('run');
+      if (!autoplay) return;
+      void pwTimer.offsetWidth;
+      pwTimer.classList.add('run');
+    }
+
+    function syncWidgetPause() {
+      widget.classList.toggle('paused', widgetHover || widgetFocus || !widgetVisible || document.hidden);
+    }
+
+    function setStage(idx, fromUser) {
+      currentStage = idx;
+      stageBtns.forEach(function(b, i) {
+        b.classList.toggle('active', i === idx);
+        b.setAttribute('aria-selected', String(i === idx));
       });
+      renderStage(idx);
+      moveIndicator();
+      if (pwSidebar.scrollWidth > pwSidebar.clientWidth + 1) {
+        var b = stageBtns[idx];
+        pwSidebar.scrollTo({ left: b.offsetLeft - (pwSidebar.clientWidth - b.offsetWidth) / 2, behavior: reduceMQ.matches ? 'auto' : 'smooth' });
+      }
+      if (fromUser) autoplay = false;
+      restartTimer();
+    }
+
+    stageBtns.forEach(function(btn, i) {
+      btn.addEventListener('click', function() { setStage(i, true); });
     });
 
-    renderStage(0);
+    pwTimer.addEventListener('animationend', function() {
+      if (autoplay) setStage((currentStage + 1) % stageBtns.length, false);
+    });
 
-    // Copy install command
+    widget.addEventListener('pointerenter', function() { widgetHover = true; syncWidgetPause(); });
+    widget.addEventListener('pointerleave', function() { widgetHover = false; syncWidgetPause(); });
+    widget.addEventListener('focusin', function() { widgetFocus = true; syncWidgetPause(); });
+    widget.addEventListener('focusout', function() { widgetFocus = false; syncWidgetPause(); });
+
+    /* ── Copy install command ── */
+    var copyIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
     document.getElementById('copyBtn').addEventListener('click', function() {
       var code = document.getElementById('installCode').textContent;
       navigator.clipboard.writeText(code).then(function() {
         var btn = document.getElementById('copyBtn');
         btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#30a46c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-        setTimeout(function() {
-          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-        }, 2000);
+        btn.classList.remove('copied');
+        void btn.offsetWidth;
+        btn.classList.add('copied');
+        setTimeout(function() { btn.innerHTML = copyIcon; btn.classList.remove('copied'); }, 2000);
       });
     });
 
-    // Mobile nav toggle
+    /* ── Mobile nav toggle ── */
     document.getElementById('navToggle').addEventListener('click', function() {
       var links = document.getElementById('navLinks');
       var expanded = links.classList.toggle('open');
       this.setAttribute('aria-expanded', String(expanded));
     });
 
-    // Close mobile nav on link click
     document.querySelectorAll('.nav-links a').forEach(function(a) {
       a.addEventListener('click', function() {
         document.getElementById('navLinks').classList.remove('open');
         document.getElementById('navToggle').setAttribute('aria-expanded', 'false');
       });
     });
+
+    /* ── Motion ── */
+    var reduceMQ = matchMedia('(prefers-reduced-motion: reduce)');
+    var fineMQ = matchMedia('(hover: hover) and (pointer: fine)');
+    var chapterMQ = matchMedia('(min-width: 1000px) and (min-height: 620px)');
+    var hasIO = 'IntersectionObserver' in window;
+
+    function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+    function smoothstep(t) { return t * t * (3 - 2 * t); }
+    // Frame-rate independent exponential approach toward a target.
+    function damp(cur, target, dt, tau) { return target + (cur - target) * Math.exp(-dt / tau); }
+
+    /* Split headlines into masked word chunks. Punctuation sticks to the
+       preceding chunk so it never wraps onto its own line. */
+    var segmenter = window.Intl && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: 'word' }) : null;
+
+    function tokens(text) {
+      if (!segmenter) return text.split(/(\s+)/);
+      var out = [];
+      Array.from(segmenter.segment(text)).forEach(function(s) {
+        var seg = s.segment;
+        if (/^\s+$/.test(seg)) out.push(seg);
+        else if (!s.isWordLike && out.length && !/^\s+$/.test(out[out.length - 1])) out[out.length - 1] += seg;
+        else out.push(seg);
+      });
+      return out;
+    }
+
+    function splitWords(el) {
+      var n = 0;
+      (function walk(node) {
+        Array.prototype.slice.call(node.childNodes).forEach(function(child) {
+          if (child.nodeType === 1) { walk(child); return; }
+          if (child.nodeType !== 3) return;
+          var frag = document.createDocumentFragment();
+          tokens(child.textContent).forEach(function(part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+            var w = document.createElement('span');
+            var inner = document.createElement('span');
+            w.className = 'w';
+            inner.textContent = part;
+            inner.style.setProperty('--wi', n++);
+            w.appendChild(inner);
+            frag.appendChild(w);
+          });
+          node.replaceChild(frag, child);
+        });
+      })(el);
+    }
+
+    var splitEls = Array.prototype.slice.call(document.querySelectorAll('[data-split]'));
+
+    function afterLang() {
+      splitEls.forEach(function(el) {
+        splitWords(el);
+        if (el.classList.contains('in-view')) {
+          el.classList.remove('in-view');
+          void el.offsetWidth;
+          el.classList.add('in-view');
+        }
+      });
+      if (pwIndicator) moveIndicator();
+    }
+
+    /* One-shot reveal. Elements already scrolled past reveal immediately. */
+    var revealEls = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    revealEls.forEach(function(el) {
+      var explicit = el.getAttribute('data-reveal');
+      var sibs = Array.prototype.filter.call(el.parentNode.children, function(c) { return c.hasAttribute('data-reveal'); });
+      el.style.setProperty('--i', explicit !== '' ? explicit : sibs.indexOf(el));
+    });
+
+    var revealIO = hasIO ? new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting || e.boundingClientRect.bottom < 0) {
+          e.target.classList.add('in-view');
+          revealIO.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }) : null;
+
+    document.querySelectorAll('.diff-card-icon svg > *').forEach(function(s) { s.setAttribute('pathLength', '1'); });
+
+    /* Spotlight follows the pointer inside each card */
+    document.querySelectorAll('.spot').forEach(function(card) {
+      card.addEventListener('pointermove', function(e) {
+        var b = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - b.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - b.top) + 'px');
+      });
+    });
+
+    /* Nav: active section underline */
+    var navLinks = {};
+    document.querySelectorAll('.nav-links a[href^="#"]:not(.nav-cta)').forEach(function(a) { navLinks[a.getAttribute('href').slice(1)] = a; });
+    if (hasIO) {
+      var sectionIO = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (!e.isIntersecting) return;
+          Object.keys(navLinks).forEach(function(id) { navLinks[id].classList.toggle('active', id === e.target.id); });
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      document.querySelectorAll('main section, body > section').forEach(function(s) { if (s.id) sectionIO.observe(s); });
+    }
+
+    /* ── Scroll + pointer engine: one rAF loop, runs only while settling ── */
+    var nav = document.querySelector('nav');
+    var hero = document.querySelector('.hero');
+    var progressBar = document.querySelector('.scroll-progress');
+    var pipeSection = document.getElementById('pipeline');
+    var chapter = document.querySelector('.pipeline-chapter');
+    var chapterStage = document.querySelector('.chapter-stage');
+    var chapterRail = document.querySelector('.chapter-rail');
+    var railItems = Array.prototype.slice.call(document.querySelectorAll('.rail-item'));
+    var pipeCards = Array.prototype.slice.call(document.querySelectorAll('.pipeline-card'));
+    var navH = 65, chapterOn = false, chapterIdx = -1;
+
+    var keys = ['heroOut', 'gx', 'gy', 'tx', 'ty', 'cp'];
+    var tau = { heroOut: 0.08, gx: 0.35, gy: 0.35, tx: 0.16, ty: 0.16, cp: 0.09 };
+    var eps = { heroOut: 0.0005, gx: 0.1, gy: 0.1, tx: 0.002, ty: 0.002, cp: 0.0003 };
+    var cur = {}, tgt = {};
+    keys.forEach(function(k) { cur[k] = 0; tgt[k] = 0; });
+    var raf = 0, last = 0;
+
+    function chapterSpan() { return Math.max(1, chapter.offsetHeight - chapterStage.offsetHeight); }
+
+    function readScroll() {
+      var max = document.documentElement.scrollHeight - innerHeight;
+      progressBar.style.transform = 'scaleX(' + (max > 0 ? clamp(scrollY / max, 0, 1) : 0).toFixed(4) + ')';
+      tgt.heroOut = reduceMQ.matches ? 0 : clamp(scrollY / hero.offsetHeight, 0, 1);
+      if (chapterOn) tgt.cp = clamp((navH - chapter.getBoundingClientRect().top) / chapterSpan(), 0, 1);
+    }
+
+    // Each stage holds still for the middle of its scroll segment, then hands off.
+    function chapterX(p) {
+      var n = pipeCards.length - 1, r = p * n, seg = Math.floor(r);
+      if (seg >= n) return n;
+      return seg + smoothstep(clamp((r - seg - 0.3) / 0.4, 0, 1));
+    }
+
+    function paintChapter(p) {
+      var x = chapterX(p), idx = Math.round(x), n = pipeCards.length - 1;
+      pipeCards.forEach(function(c, i) {
+        var d = x - i, a = Math.abs(d);
+        // Outgoing clears just before incoming arrives: opacity hits 0 at |d| = 0.48.
+        c.style.setProperty('--co', smoothstep(clamp(1 - a / 0.48, 0, 1)).toFixed(3));
+        c.style.setProperty('--cy', (clamp(d, -1, 1) * -64).toFixed(1) + 'px');
+        c.style.setProperty('--cs', (1 - Math.min(a, 1) * 0.05).toFixed(4));
+      });
+      chapterRail.style.setProperty('--rp', (x / n).toFixed(4));
+      if (idx === chapterIdx) return;
+      chapterIdx = idx;
+      pipeCards.forEach(function(c, i) { c.classList.toggle('is-active', i === idx); c.inert = i !== idx; });
+      railItems.forEach(function(li, i) {
+        li.classList.toggle('active', i === idx);
+        li.classList.toggle('done', i < idx);
+        if (i === idx) li.firstElementChild.setAttribute('aria-current', 'step');
+        else li.firstElementChild.removeAttribute('aria-current');
+      });
+    }
+
+    function paint() {
+      hero.style.setProperty('--hero-out', cur.heroOut.toFixed(4));
+      hero.style.setProperty('--gx', cur.gx.toFixed(1));
+      hero.style.setProperty('--gy', cur.gy.toFixed(1));
+      widget.style.setProperty('--tx', cur.tx.toFixed(3));
+      widget.style.setProperty('--ty', cur.ty.toFixed(3));
+      if (chapterOn) paintChapter(cur.cp);
+    }
+
+    function frame(now) {
+      raf = 0;
+      var dt = last ? Math.min((now - last) / 1000, 0.05) : 1 / 60;
+      last = now;
+      var moving = false;
+      keys.forEach(function(k) {
+        var v = reduceMQ.matches ? tgt[k] : damp(cur[k], tgt[k], dt, tau[k]);
+        if (Math.abs(v - tgt[k]) < eps[k]) v = tgt[k]; else moving = true;
+        cur[k] = v;
+      });
+      paint();
+      if (moving) raf = requestAnimationFrame(frame); else last = 0;
+    }
+
+    function schedule() { if (!raf) raf = requestAnimationFrame(frame); }
+
+    function setChapter() {
+      navH = nav.offsetHeight;
+      document.documentElement.style.setProperty('--nav-h', navH + 'px');
+      chapterOn = chapterMQ.matches && !reduceMQ.matches && hasIO;
+      pipeSection.classList.toggle('chapter-on', chapterOn);
+      chapterIdx = -1;
+      if (chapterOn) {
+        chapter.style.height = (chapterStage.offsetHeight + (pipeCards.length - 1) * innerHeight * 0.55) + 'px';
+      } else {
+        chapter.style.height = '';
+        pipeCards.forEach(function(c) {
+          c.inert = false;
+          c.classList.remove('is-active');
+          ['--co', '--cy', '--cs'].forEach(function(p) { c.style.removeProperty(p); });
+        });
+      }
+      readScroll();
+      cur.cp = tgt.cp;
+      paint();
+    }
+
+    railItems.forEach(function(li, i) {
+      li.firstElementChild.addEventListener('click', function() {
+        if (!chapterOn) return;
+        var p = i / (pipeCards.length - 1);
+        var top = scrollY + chapter.getBoundingClientRect().top - navH + p * chapterSpan();
+        window.scrollTo({ top: Math.ceil(top) + 1, behavior: 'smooth' });
+      });
+    });
+
+    hero.addEventListener('pointermove', function(e) {
+      if (!fineMQ.matches || reduceMQ.matches) return;
+      var hb = hero.getBoundingClientRect(), wb = widget.getBoundingClientRect();
+      tgt.gx = ((e.clientX - hb.left) / hb.width * 2 - 1) * 140;
+      tgt.gy = ((e.clientY - hb.top) / hb.height * 2 - 1) * 90;
+      tgt.tx = clamp((e.clientX - (wb.left + wb.width / 2)) / wb.width, -1, 1) * 5;
+      tgt.ty = clamp((e.clientY - (wb.top + wb.height / 2)) / wb.height, -1, 1) * -4;
+      widget.style.setProperty('--px', ((e.clientX - wb.left) / wb.width * 100).toFixed(1) + '%');
+      widget.style.setProperty('--py', ((e.clientY - wb.top) / wb.height * 100).toFixed(1) + '%');
+      schedule();
+    });
+
+    hero.addEventListener('pointerleave', function() {
+      tgt.gx = tgt.gy = tgt.tx = tgt.ty = 0;
+      schedule();
+    });
+
+    addEventListener('scroll', function() { readScroll(); schedule(); }, { passive: true });
+
+    var resizeTimer = 0;
+    addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() { setChapter(); moveIndicator(); schedule(); }, 120);
+    }, { passive: true });
+
+    function onMotionPref() {
+      if (reduceMQ.matches) { autoplay = false; restartTimer(); }
+      setChapter();
+      schedule();
+    }
+
+    [reduceMQ, chapterMQ].forEach(function(mq) {
+      if (mq.addEventListener) mq.addEventListener('change', onMotionPref);
+      else mq.addListener(onMotionPref);
+    });
+
+    document.addEventListener('visibilitychange', syncWidgetPause);
+
+    /* ── Init ── */
+    renderStage(0);
+    applyLang(currentLang);
+    autoplay = !reduceMQ.matches;
+    setStage(0, false);
+    setChapter();
+
+    if (hasIO) {
+      revealEls.forEach(function(el) { revealIO.observe(el); });
+      new IntersectionObserver(function(entries) {
+        widgetVisible = entries[0].isIntersecting;
+        syncWidgetPause();
+      }, { threshold: 0.35 }).observe(widget);
+    } else {
+      revealEls.forEach(function(el) { el.classList.add('in-view'); });
+      widgetVisible = true;
+    }
+    syncWidgetPause();
+
+    // Fonts change line metrics; re-measure layout-dependent pieces once they land.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function() { setChapter(); moveIndicator(); });
   </script>
 
 </body>
