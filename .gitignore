@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .DS_Store
+.landable.qoder.site
