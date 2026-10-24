@@ -4,7 +4,6 @@ const translatedNodes = [...document.querySelectorAll("[data-i18n]")];
 const english = Object.fromEntries(
   translatedNodes.map((node) => [node.dataset.i18n, node.innerHTML]),
 );
-english.atlasCaption = "Select a star. Trace a real contribution.";
 const chinese = {
   skip: "跳到正文",
   menu: "菜单",
@@ -18,15 +17,15 @@ const chinese = {
   heroCta: "找到我的起点",
   heroSecondary: "看看这段旅程",
   heroNote: "兴趣决定方向。<br>下一步，由你来选。",
-  chartCoordinates: "尚待探索的可能",
+  chartCoordinates: "近期热榜中的可能",
   chartYou: "你的兴趣",
-  chartFit: "一份契合的贡献",
+  chartFit: "发现值得探索的项目",
   toolsTag: "开发者工具",
   aiTag: "AI 与模型训练",
   systemsTag: "系统与基础设施",
   observationTitle: "一个小修复，一个好落点。",
   observationDetail: "追踪并修复 Unix socket 的替换竞态。",
-  atlasCaption: "选择一颗星，看看真实贡献的落点。",
+  atlasCaption: "近期热榜，仅供探索；真正的契合，还需要你来判断。",
   horizon: "少一点漫游，多一点归属。",
   approachContext: "先找到值得加入的项目",
   approachTitle: "好的补丁，<br>也需要合适的落点。",
@@ -60,13 +59,13 @@ const chinese = {
     "这些贡献通过 Landable 发现，每个链接都指向已合并的 PR。这是过去的实践，不是对接纳结果的承诺。",
   workSoupType: "大模型微调",
   workSoupBody:
-    "从 MPS 测试覆盖到可靠的答案评分。根据可用硬件确定范围，用真实行为验证修复。",
+    "从 MPS 覆盖、答案评分到损失缩放与中文文档。根据可用硬件确定范围，用真实行为验证修复。",
   workKvType: "GPU 基础设施",
   workKvBody:
     "旧监听器退出时，可能误删替代者正在使用的 socket。删除前检查身份，并覆盖这场竞态。",
   workArchifyType: "图解 Agent Skill",
   workArchifyBody:
-    "让端点报错给出可执行的线索，改进修复建议，再补齐基准测试的盲区。",
+    "让端点报错给出可执行的线索，改进修复建议，再用可复现的基准衡量质量、速度与成本。",
   workUniType: "多模态强化学习",
   workUniBody:
     "确认无用后移除旧辅助函数；对齐 rollout 的对数概率，保留训练侧的损失缩放。",
@@ -223,44 +222,6 @@ const stages = {
   ],
 };
 
-const examples = {
-  systems: {
-    repo: "ovg-project / kvcached",
-    url: "https://github.com/ovg-project/kvcached/pull/519",
-    en: {
-      title: "A small fix. A real opening.",
-      detail: "A Unix socket race, traced and resolved.",
-    },
-    zh: {
-      title: "一个小修复，一个好落点。",
-      detail: "追踪并修复 Unix socket 的替换竞态。",
-    },
-  },
-  ai: {
-    repo: "MakazhanAlpamys / Soup",
-    url: "https://github.com/MakazhanAlpamys/Soup/pull/1375",
-    en: {
-      title: "Work within your reach.",
-      detail: "MPS test coverage, restored on available hardware.",
-    },
-    zh: {
-      title: "让擅长的事，派上用场。",
-      detail: "在可用硬件上验证，恢复 MPS 测试覆盖。",
-    },
-  },
-  tools: {
-    repo: "tt-a1i / archify",
-    url: "https://github.com/tt-a1i/archify/pull/654",
-    en: {
-      title: "Leave it a little clearer.",
-      detail: "Actionable endpoint errors and repair suggestions.",
-    },
-    zh: {
-      title: "为后来的人，留下一点清晰。",
-      detail: "让端点报错与修复建议更有帮助。",
-    },
-  },
-};
 let language = "en";
 try {
   if (localStorage.getItem("landable-lang") === "zh") language = "zh";
@@ -268,11 +229,9 @@ try {
   /* Storage is optional. */
 }
 let stage = 2;
-let interest = "systems";
 let statusTimer;
 const atlas = document.querySelector(".atlas");
 const stageButtons = [...document.querySelectorAll("[data-stage]")];
-const interestButtons = [...document.querySelectorAll("button[data-interest]")];
 const menu = document.querySelector(".menu-toggle");
 const navigation = document.querySelector("#navigation");
 const copyButton = document.querySelector(".copy-button");
@@ -299,23 +258,6 @@ function renderStage() {
   });
   document.querySelector(".artifact-items").replaceChildren(...items);
   document.querySelector(".choice-text").textContent = data.choice;
-  document.dispatchEvent(new Event("landable:content-change"));
-}
-function renderInterest() {
-  const data = examples[interest];
-  atlas.dataset.interest = interest;
-  interestButtons.forEach((button) =>
-    button.setAttribute(
-      "aria-pressed",
-      String(button.dataset.interest === interest),
-    ),
-  );
-  document.querySelector(".observation-repo").textContent = data.repo;
-  document.querySelector(".observation-link").href = data.url;
-  document.querySelector(".observation-title").textContent =
-    data[language].title;
-  document.querySelector(".observation-detail").textContent =
-    data[language].detail;
   document.dispatchEvent(new Event("landable:content-change"));
 }
 function closeMenu(returnFocus = false) {
@@ -374,7 +316,6 @@ function applyLanguage(next) {
   clearTimeout(statusTimer);
   copyStatus.textContent = "";
   renderStage();
-  renderInterest();
   closeMenu();
   try {
     localStorage.setItem("landable-lang", language);
@@ -408,12 +349,6 @@ stageButtons.forEach((button) => {
     }
   });
 });
-interestButtons.forEach((button) =>
-  button.addEventListener("click", () => {
-    interest = button.dataset.interest;
-    renderInterest();
-  }),
-);
 menu.addEventListener("click", () => {
   const open = menu.getAttribute("aria-expanded") !== "true";
   menu.setAttribute("aria-expanded", String(open));
@@ -539,8 +474,18 @@ if ("IntersectionObserver" in window) {
 }
 applyLanguage(language);
 root.classList.add("is-enhanced");
-import("./story.js")
+const storyReady = import("./story.js")
   .then(({ createStory }) => createStory())
   .catch(() => {
     /* The full static reading layout is already available. */
   });
+
+import("./contributions.mjs")
+  .then(({ enhanceContributions }) => enhanceContributions())
+  .catch(() => {
+    /* The dated, verified contribution list remains readable without the API. */
+  });
+
+storyReady.then(() => import("./trending-atlas.mjs"))
+  .then(({ enhanceAtlas }) => enhanceAtlas())
+  .catch(() => { /* The verified first Trending group remains visible. */ });

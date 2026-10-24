@@ -4,6 +4,9 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  schedule:
+    # 08:37 Asia/Shanghai; avoid the busy start of the hour.
+    - cron: '37 0 * * *'
 
 permissions:
   contents: read
@@ -22,6 +25,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify website data and scroll behavior
+        run: |
+          node --test tests/*.test.mjs
+          python3 tests/test_website_data.py
+      - name: Refresh daily Trending and contribution data
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/update_website_data.py
+          node scripts/update_contributions.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,0 +1,54 @@
+{
+  "source": "https://github.com/trending?since=daily",
+  "fetchedAt": "2026-10-24T06:13:06.052330+00:00",
+  "repositories": [
+    {
+      "name": "cloudflare/security-audit-skill",
+      "lang": "JavaScript",
+      "desc": "A coding-agent skill for multi-phase security audits with independently verified, machine-readable findings",
+      "stars": 42552
+    },
+    {
+      "name": "php/php-src",
+      "lang": "C",
+      "desc": "The PHP Interpreter",
+      "stars": 41600
+    },
+    {
+      "name": "anthropics/knowledge-work-plugins",
+      "lang": "Python",
+      "desc": "Open source repository of plugins primarily intended for knowledge workers to use in Claude Cowork",
+      "stars": 32348
+    },
+    {
+      "name": "NVIDIA/OpenShell",
+      "lang": "Rust",
+      "desc": "OpenShell is the safe, private runtime for autonomous AI agents.",
+      "stars": 18939
+    },
+    {
+      "name": "Renhuai123/ziwei-doushu",
+      "lang": "TypeScript",
+      "desc": "紫微斗数开源排盘引擎 — 基于倪海厦《天纪》体系，含完整排盘算法、四化系统、格局知识库、古籍原文数据",
+      "stars": 7024
+    },
+    {
+      "name": "SnailSploit/Claude-Red",
+      "lang": "Python",
+      "desc": "claude-red is a curated library of offensive security skills designed for the Claude skills system. Each skill is a structured SKILL.md file that primes Claude with expert-level methodology for a specific attack surface — from SQLi to shellcode, EDR evasion to exploit development.",
+      "stars": 8626
+    },
+    {
+      "name": "OpenBMB/VoxCPM",
+      "lang": "Python",
+      "desc": "VoxCPM2: Tokenizer-Free TTS for Multilingual Speech Generation, Creative Voice Design, and True-to-Life Cloning",
+      "stars": 40364
+    },
+    {
+      "name": "nodejs/node",
+      "lang": "JavaScript",
+      "desc": "Node.js JavaScript runtime ✨🐢🚀✨",
+      "stars": 122956
+    }
+  ]
+}

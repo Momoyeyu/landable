@@ -1,0 +1,101 @@
+{
+  "fetchedAt": "2026-10-24T06:19:54.182Z",
+  "projects": [
+    {
+      "repo": "tt-a1i/archify",
+      "minimumPR": 654,
+      "stars": 88386,
+      "prs": [
+        {
+          "number": 1059,
+          "title": "迭代 benchmark v2：Archify 前后对比、原始测量与可选人评"
+        },
+        {
+          "number": 707,
+          "title": "test(benchmarks): cover remaining repair-rounds blind spots"
+        },
+        {
+          "number": 654,
+          "title": "perf: structured endpoint diagnostics and unified label-width phrasing"
+        }
+      ]
+    },
+    {
+      "repo": "MakazhanAlpamys/Soup",
+      "minimumPR": 1375,
+      "stars": 9605,
+      "prs": [
+        {
+          "number": 2067,
+          "title": "docs(readme): polish Simplified Chinese wording for native fluency"
+        },
+        {
+          "number": 1924,
+          "title": "fix(eval): score wrapped and leading MCQ letters"
+        },
+        {
+          "number": 1837,
+          "title": "docs(readme): polish zh v0.76.0 release notes"
+        },
+        {
+          "number": 1836,
+          "title": "docs(readme): polish zh wording for the 8B figure update"
+        },
+        {
+          "number": 1771,
+          "title": "fix(trainers): divide PRM/RAFT losses across gradient accumulation (#1444)"
+        },
+        {
+          "number": 1733,
+          "title": "docs(readme): add Simplified Chinese translation"
+        },
+        {
+          "number": 1630,
+          "title": "fix(reward-hacking): keep info_rm silent on rewards too discrete for a median split (#1438)"
+        },
+        {
+          "number": 1533,
+          "title": "fix(reward-synth): read numeric golds with the shared answer parser and name rejected references (#1350)"
+        },
+        {
+          "number": 1490,
+          "title": "fix(eval): score custom tasks by stated answer; token-bound contains (#1342)"
+        },
+        {
+          "number": 1471,
+          "title": "fix(data): pin the reasoning template's answer markers and the GRPO demo fixture copies"
+        },
+        {
+          "number": 1375,
+          "title": "test(stream): resolve mps in the streamed builders and run the 32 skipped cases on MPS (#1355)"
+        }
+      ]
+    },
+    {
+      "repo": "ovg-project/kvcached",
+      "minimumPR": 519,
+      "stars": 1944,
+      "prs": [
+        {
+          "number": 519,
+          "title": "fix: keep a same-name replacement's socket when an old listener stops 🤖🤖🤖"
+        }
+      ]
+    },
+    {
+      "repo": "Tencent-Hunyuan/UniRL",
+      "minimumPR": 530,
+      "stars": 1025,
+      "prs": [
+        {
+          "number": 536,
+          "title": "fix(sglang): score cps rollout log-prob without Gaussian constants"
+        },
+        {
+          "number": 530,
+          "title": "refactor(train): remove unused adapter-unaware LoRA helpers from sharded_state"
+        }
+      ]
+    }
+  ]
+}

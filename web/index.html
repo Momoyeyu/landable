@@ -159,11 +159,11 @@
           </div>
         </div>
 
-        <figure class="atlas" aria-labelledby="atlas-caption">
+        <figure class="atlas" aria-labelledby="atlas-caption" data-route="tools" data-fetched-at="2026-10-24T06:13:06.052330+00:00">
           <div class="atlas-corner corner-top" aria-hidden="true"></div>
           <div class="atlas-corner corner-bottom" aria-hidden="true"></div>
           <div class="atlas-coordinates" aria-hidden="true">
-            <span data-i18n="chartCoordinates">A field of possibilities</span
+            <span data-i18n="chartCoordinates">A field of Trending possibilities</span
             ><span>✧</span>
           </div>
           <div class="atlas-plane">
@@ -310,6 +310,11 @@
                   stroke-opacity=".12"
                 />
               </g>
+              <g class="route route-other">
+                <path d="M118 460C170 472 210 377 291 344S352 242 402 292 451 339 497 372L570 407" stroke="url(#route-color)" stroke-width="2" />
+                <circle cx="570" cy="407" r="17" stroke="#9edbc7" stroke-opacity=".35" />
+                <circle cx="570" cy="407" r="27" stroke="#9edbc7" stroke-opacity=".12" />
+              </g>
               <g class="route route-tools">
                 <path
                   d="M118 460C180 440 210 377 291 344S352 242 402 292 360 205 279 206 220 210 187 167"
@@ -401,9 +406,8 @@
               >
                 <text x="79" y="496" data-i18n="chartYou">Your interests</text>
                 <text x="338" y="352" fill="#c6bfeb" data-i18n="chartFit">
-                  A contribution that fits
+                  Discover a project worth exploring
                 </text>
-                <text x="553" y="433">UniRL</text>
               </g>
               <path
                 d="m608 83 2 7 7 2-7 2-2 7-2-7-7-2 7-2Z"
@@ -416,61 +420,46 @@
                 opacity=".7"
               />
             </svg>
-            <button
-              class="repo-star repo-tools enhanced-only"
-              data-interest="tools"
-              aria-pressed="false"
-            >
-              <span class="star-point"></span
-              ><span class="star-name"
-                >archify<span data-i18n="toolsTag">Developer tools</span></span
-              >
+            <button class="repo-star repo-tools" data-trending-slot="0" data-repo="cloudflare/security-audit-skill" data-stars="42552" data-language="JavaScript" data-description="A coding-agent skill for multi-phase security audits with independently verified, machine-readable findings" aria-pressed="true" disabled>
+              <span class="star-point"></span><span class="star-name"><strong>security-audit-skill</strong><span>JavaScript · ☆ 42,552</span></span>
             </button>
-            <button
-              class="repo-star repo-ai enhanced-only"
-              data-interest="ai"
-              aria-pressed="false"
-            >
-              <span class="star-point"></span
-              ><span class="star-name"
-                >Soup<span data-i18n="aiTag">AI & learning</span></span
-              >
+            <button class="repo-star repo-ai" data-trending-slot="1" data-repo="php/php-src" data-stars="41600" data-language="C" data-description="The PHP Interpreter" aria-pressed="false" disabled>
+              <span class="star-point"></span><span class="star-name"><strong>php-src</strong><span>C · ☆ 41,600</span></span>
             </button>
-            <button
-              class="repo-star repo-systems enhanced-only"
-              data-interest="systems"
-              aria-pressed="true"
-            >
-              <span class="star-point"></span
-              ><span class="star-name"
-                >kvcached<span data-i18n="systemsTag"
-                  >Systems & infra</span
-                ></span
-              >
+            <button class="repo-star repo-systems" data-trending-slot="2" data-repo="anthropics/knowledge-work-plugins" data-stars="32348" data-language="Python" data-description="Open source repository of plugins primarily intended for knowledge workers to use in Claude Cowork" aria-pressed="false" disabled>
+              <span class="star-point"></span><span class="star-name"><strong>knowledge-work-plugins</strong><span>Python · ☆ 32,348</span></span>
+            </button>
+            <button class="repo-star repo-fourth" data-trending-slot="3" data-repo="NVIDIA/OpenShell" data-stars="18939" data-language="Rust" data-description="OpenShell is the safe, private runtime for autonomous AI agents." aria-pressed="false" disabled>
+              <span class="star-point"></span><span class="star-name"><strong>OpenShell</strong><span>Rust · ☆ 18,939</span></span>
             </button>
           </div>
-          <div class="atlas-observation" aria-live="polite" aria-atomic="true">
+          <div class="atlas-observation">
             <span class="observation-mark" aria-hidden="true">⌁</span>
             <div>
-              <p class="observation-repo">ovg-project / kvcached</p>
+              <p class="observation-repo">cloudflare / security-audit-skill</p>
               <a
                 class="observation-link"
-                href="https://github.com/ovg-project/kvcached/pull/519"
-                ><span class="observation-title" data-i18n="observationTitle"
-                  >A small fix. A real opening.</span
+                href="https://github.com/cloudflare/security-audit-skill"
+                ><span class="observation-title"
+                  >security-audit-skill</span
                 ><span aria-hidden="true">↗</span></a
               >
-              <p class="observation-detail" data-i18n="observationDetail">
-                A Unix socket race, traced and resolved.
+              <p class="observation-detail">
+                A coding-agent skill for multi-phase security audits with independently verified, machine-readable findings
               </p>
             </div>
             <span class="merged-dot" aria-hidden="true"></span>
           </div>
           <figcaption id="atlas-caption">
-            <span data-i18n="atlasCaption"
-              >Real contributions, drawn as a constellation.</span
-            ><span class="atlas-counter" aria-hidden="true">✧</span>
+            <a class="atlas-source" href="https://github.com/trending?since=daily">GitHub Trending · Daily</a>
+            <div class="atlas-playback">
+              <button class="atlas-previous" type="button" aria-label="Previous projects" disabled>←</button>
+              <span class="atlas-counter">01 / 01</span>
+              <button class="atlas-next" type="button" aria-label="Next projects" disabled>→</button>
+              <button class="atlas-pause" type="button" aria-label="Pause project rotation" aria-pressed="false" disabled>Ⅱ</button>
+            </div>
           </figcaption>
+          <p class="atlas-disclaimer" data-i18n="atlasCaption">Trending projects to explore. A good fit still takes your judgment.</p>
         </figure>
       </section>
 
@@ -733,78 +722,79 @@
             to a merged pull request. Past work, not a promise of acceptance.
           </p>
         </div>
+        <p class="work-update" role="status" aria-live="polite">Stars, high to low · Last verified October 24, 2026</p>
         <div class="work-list">
-          <article class="work-row">
+          <article class="work-row" data-repo="tt-a1i/archify" data-stars="88381" data-minimum-pr="654">
+            <div class="work-symbol symbol-archify" aria-hidden="true">⌘</div>
+            <div class="work-project">
+              <a href="https://github.com/tt-a1i/archify">archify</a
+              ><span data-i18n="workArchifyType">Diagramming skill</span>
+              <small class="work-stars" aria-label="88,381 GitHub stars">☆ 88,381</small>
+            </div>
+            <p data-i18n="workArchifyBody">
+              Make endpoint errors actionable, improve repair suggestions, and
+              measure quality, speed and cost with reproducible benchmarks.
+            </p>
+            <div class="pr-links" aria-label="archify merged pull requests">
+              <a href="https://github.com/tt-a1i/archify/pull/1059" title="迭代 benchmark v2：Archify 前后对比、原始测量与可选人评">#1059</a>
+              <a href="https://github.com/tt-a1i/archify/pull/707" title="test(benchmarks): cover remaining repair-rounds blind spots">#707</a>
+              <a href="https://github.com/tt-a1i/archify/pull/654" title="perf: structured endpoint diagnostics and unified label-width phrasing">#654</a>
+            </div>
+          </article>
+          <article class="work-row" data-repo="MakazhanAlpamys/Soup" data-stars="9604" data-minimum-pr="1375">
             <div class="work-symbol symbol-soup" aria-hidden="true">≈</div>
             <div class="work-project">
               <a href="https://github.com/MakazhanAlpamys/Soup">Soup</a
               ><span data-i18n="workSoupType">LLM fine-tuning</span>
+              <small class="work-stars" aria-label="9,604 GitHub stars">☆ 9,604</small>
             </div>
             <p data-i18n="workSoupBody">
-              From MPS coverage to reliable answer scoring. Scoped to the
-              hardware and checked against real behavior.
+              From MPS coverage and answer scoring to loss scaling and Chinese
+              documentation. Scoped to available hardware and verified behavior.
             </p>
             <div class="pr-links" aria-label="Soup merged pull requests">
-              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1375"
-                >#1375</a
-              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1471"
-                >#1471</a
-              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1490"
-                >#1490</a
-              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1533"
-                >#1533</a
-              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1630"
-                >#1630</a
-              >
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/2067" title="docs(readme): polish Simplified Chinese wording for native fluency">#2067</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1924" title="fix(eval): score wrapped and leading MCQ letters">#1924</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1837" title="docs(readme): polish zh v0.76.0 release notes">#1837</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1836" title="docs(readme): polish zh wording for the 8B figure update">#1836</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1771" title="fix(trainers): divide PRM/RAFT losses across gradient accumulation (#1444)">#1771</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1733" title="docs(readme): add Simplified Chinese translation">#1733</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1630" title="fix(reward-hacking): keep info_rm silent on rewards too discrete for a median split (#1438)">#1630</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1533" title="fix(reward-synth): read numeric golds with the shared answer parser and name rejected references (#1350)">#1533</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1490" title="fix(eval): score custom tasks by stated answer; token-bound contains (#1342)">#1490</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1471" title="fix(data): pin the reasoning template&#x27;s answer markers and the GRPO demo fixture copies">#1471</a>
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1375" title="test(stream): resolve mps in the streamed builders and run the 32 skipped cases on MPS (#1355)">#1375</a>
             </div>
           </article>
-          <article class="work-row">
+          <article class="work-row" data-repo="ovg-project/kvcached" data-stars="1943" data-minimum-pr="519">
             <div class="work-symbol symbol-kv" aria-hidden="true">⋈</div>
             <div class="work-project">
               <a href="https://github.com/ovg-project/kvcached">kvcached</a
               ><span data-i18n="workKvType">GPU infrastructure</span>
+              <small class="work-stars" aria-label="1,943 GitHub stars">☆ 1,943</small>
             </div>
             <p data-i18n="workKvBody">
               An old listener could delete a replacement’s live socket. Check
               its identity before unlinking, and test the race.
             </p>
             <div class="pr-links" aria-label="kvcached merged pull requests">
-              <a href="https://github.com/ovg-project/kvcached/pull/519"
-                >#519</a
-              >
+              <a href="https://github.com/ovg-project/kvcached/pull/519" title="fix: keep a same-name replacement&#x27;s socket when an old listener stops 🤖🤖🤖">#519</a>
             </div>
           </article>
-          <article class="work-row">
-            <div class="work-symbol symbol-archify" aria-hidden="true">⌘</div>
-            <div class="work-project">
-              <a href="https://github.com/tt-a1i/archify">archify</a
-              ><span data-i18n="workArchifyType">Diagramming skill</span>
-            </div>
-            <p data-i18n="workArchifyBody">
-              Make endpoint errors actionable, improve repair suggestions, and
-              close the benchmark’s blind spots.
-            </p>
-            <div class="pr-links" aria-label="archify merged pull requests">
-              <a href="https://github.com/tt-a1i/archify/pull/654">#654</a
-              ><a href="https://github.com/tt-a1i/archify/pull/707">#707</a>
-            </div>
-          </article>
-          <article class="work-row">
+          <article class="work-row" data-repo="Tencent-Hunyuan/UniRL" data-stars="1025" data-minimum-pr="530">
             <div class="work-symbol symbol-unirl" aria-hidden="true">✳</div>
             <div class="work-project">
               <a href="https://github.com/Tencent-Hunyuan/UniRL">UniRL</a
               ><span data-i18n="workUniType">Multimodal RL</span>
+              <small class="work-stars" aria-label="1,025 GitHub stars">☆ 1,025</small>
             </div>
             <p data-i18n="workUniBody">
               Remove verified dead helpers. Align rollout log-probabilities
               while preserving training-side loss scaling.
             </p>
             <div class="pr-links" aria-label="UniRL merged pull requests">
-              <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/530"
-                >#530</a
-              ><a href="https://github.com/Tencent-Hunyuan/UniRL/pull/536"
-                >#536</a
-              >
+              <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/536" title="fix(sglang): score cps rollout log-prob without Gaussian constants">#536</a>
+              <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/530" title="refactor(train): remove unused adapter-unaware LoRA helpers from sharded_state">#530</a>
             </div>
           </article>
         </div>
