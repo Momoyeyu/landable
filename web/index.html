@@ -1,2175 +1,926 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>landable — Land PRs in projects that want them</title>
-  <meta name="description" content="An interest-driven open-source contribution pipeline. From discovering repositories to merged PRs — with you deciding what to work on and what to publish.">
-  <meta name="color-scheme" content="dark">
-  <meta property="og:title" content="landable — Land PRs in projects that want them">
-  <meta property="og:description" content="An interest-driven open-source contribution pipeline. From discovering repositories to merged PRs.">
-  <meta property="og:type" content="website">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
-  <script>document.documentElement.classList.add('js');</script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0e0f10;
-      --bg-raised: #161719;
-      --bg-surface: #1c1d1f;
-      --bg-hover: #222325;
-      --text: #ecece6;
-      --text-secondary: #9b9b93;
-      --text-tertiary: #6b6b65;
-      --accent: #d4a84b;
-      --accent-dim: #b8923e;
-      --accent-glow: rgba(212, 168, 75, 0.12);
-      --brand-orange: #E8623C;
-      --brand-gold: #F2A33C;
-      --border: #2a2b2d;
-      --border-light: #333436;
-      --serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
-      --sans: 'Inter', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
-      --radius: 8px;
-      --radius-lg: 12px;
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
-      --nav-h: 65px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    section { scroll-margin-top: var(--nav-h); }
-
-    body {
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.6;
-      color: var(--text);
-      background: var(--bg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
-    a:hover { color: var(--brand-gold); }
-
-    :focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* ── Navigation ── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(14, 15, 16, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
-
-    .nav-brand {
-      font-family: var(--sans);
-      font-weight: 700;
-      font-size: 20px;
-      color: var(--text);
-      letter-spacing: -0.5px;
-    }
-
-    .nav-brand span {
-      background: linear-gradient(135deg, var(--brand-orange), var(--brand-gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text-secondary);
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.15s;
-    }
-
-    .nav-links a:hover { color: var(--text); }
-
-    .nav-links a:not(.nav-cta) { position: relative; }
-
-    .nav-links a:not(.nav-cta)::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -6px;
-      height: 1px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: right;
-      transition: transform 0.5s var(--ease-out);
-    }
-
-    .nav-links a.active { color: var(--text); }
-    .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
-
-    .scroll-progress {
-      position: absolute;
-      left: 0;
-      bottom: -1px;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold));
-      transform: scaleX(0);
-      transform-origin: left;
-      pointer-events: none;
-    }
-
-    .nav-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      background: var(--accent);
-      color: var(--bg) !important;
-      font-size: 13px;
-      font-weight: 600;
-      border-radius: 6px;
-      transition: background 0.15s;
-    }
-
-    .nav-cta:hover { background: var(--brand-gold); color: var(--bg) !important; }
-
-    .lang-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 2px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .lang-toggle button {
-      background: none;
-      border: none;
-      color: var(--text-tertiary);
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      transition: all 0.2s;
-      font-family: var(--sans);
-    }
-
-    .lang-toggle button.active {
-      background: var(--accent);
-      color: var(--bg);
-    }
-
-    .mobile-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 24px;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    /* ── Hero ── */
-    .hero {
-      padding: 80px 0 60px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero > .container { position: relative; z-index: 1; }
-
-    .hero-glow {
-      position: absolute;
-      top: -280px;
-      right: -200px;
-      width: 820px;
-      height: 820px;
-      pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, rgba(232, 98, 60, 0.11) 0%, rgba(212, 168, 75, 0.06) 32%, transparent 64%);
-      transform: translate3d(calc(var(--gx, 0) * 1px), calc(var(--gy, 0) * 1px), 0);
-      animation: glowBreath 9s ease-in-out infinite alternate;
-    }
-
-    @keyframes glowBreath {
-      from { opacity: 0.7; scale: 0.94; }
-      to { opacity: 1; scale: 1.06; }
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-image: radial-gradient(rgba(236, 236, 230, 0.07) 1px, transparent 1px);
-      background-size: 28px 28px;
-      -webkit-mask-image: radial-gradient(ellipse 60% 70% at 72% 40%, #000 0%, transparent 70%);
-      mask-image: radial-gradient(ellipse 60% 70% at 72% 40%, #000 0%, transparent 70%);
-      transform: translate3d(0, calc(var(--hero-out, 0) * 60px), 0);
-    }
-
-    .hero-copy {
-      transform: translate3d(0, calc(var(--hero-out, 0) * -70px), 0);
-      opacity: calc(1 - var(--hero-out, 0) * 0.6);
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: center;
-    }
-
-    .hero-tagline {
-      font-family: var(--serif);
-      font-size: clamp(36px, 4.5vw, 56px);
-      line-height: 1.15;
-      color: var(--text);
-      margin-bottom: 20px;
-    }
-
-    .hero-tagline em {
-      font-style: italic;
-      color: var(--accent);
-    }
-
-    .hero-desc {
-      font-size: 17px;
-      line-height: 1.7;
-      color: var(--text-secondary);
-      margin-bottom: 32px;
-      max-width: 480px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: var(--accent);
-      color: var(--bg);
-      font-size: 15px;
-      font-weight: 600;
-      border: none;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: background 0.15s, transform 0.15s;
-      text-decoration: none;
-    }
-
-    .btn-primary:hover { background: var(--brand-gold); color: var(--bg); transform: translateY(-1px); }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: transparent;
-      color: var(--text);
-      font-size: 15px;
-      font-weight: 500;
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s, transform 0.15s;
-      text-decoration: none;
-    }
-
-    .btn-secondary:hover { border-color: var(--text-secondary); background: var(--bg-raised); color: var(--text); transform: translateY(-1px); }
-
-    /* ── Interactive Pipeline Widget ── */
-    .pipeline-widget {
-      position: relative;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      transition: border-color 0.3s;
-      --extra-t: border-color 0.3s;
-      transform: translate3d(0, calc(var(--hero-out, 0) * -36px), 0) perspective(1400px) rotateX(calc(var(--ty, 0) * 1deg)) rotateY(calc(var(--tx, 0) * 1deg));
-      box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.015);
-    }
-
-    .pipeline-widget::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
-      background: radial-gradient(520px circle at var(--px, 50%) var(--py, 0%), rgba(255, 255, 255, 0.05), transparent 45%);
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-
-    .pipeline-widget:hover { border-color: var(--border-light); }
-    .pipeline-widget:hover::after { opacity: 1; }
-
-    .pw-titlebar {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .pw-timer {
-      position: absolute;
-      left: 0;
-      bottom: -1px;
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold));
-      transform: scaleX(0);
-      transform-origin: left;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .pw-timer.run {
-      opacity: 1;
-      animation: pwTimer var(--pw-dur, 4.6s) linear forwards;
-    }
-
-    .pipeline-widget.paused .pw-timer.run { animation-play-state: paused; }
-
-    @keyframes pwTimer {
-      from { transform: scaleX(0); }
-      to { transform: scaleX(1); }
-    }
-
-    .pw-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--border-light);
-    }
-
-    .pw-dot:nth-child(1) { background: #e5484d; }
-    .pw-dot:nth-child(2) { background: #e5a000; }
-    .pw-dot:nth-child(3) { background: #30a46c; }
-
-    .pw-title {
-      margin-left: 8px;
-      font-size: 12px;
-      color: var(--text-tertiary);
-      font-weight: 500;
-    }
-
-    .pw-body {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      min-height: 320px;
-    }
-
-    .pw-sidebar {
-      position: relative;
-      border-right: 1px solid var(--border);
-      padding: 12px 0;
-    }
-
-    .pw-indicator {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: var(--ih, 40px);
-      transform: translate3d(0, var(--iy, 12px), 0);
-      background: var(--accent-glow);
-      border-right: 2px solid var(--accent);
-      pointer-events: none;
-      transition: transform 0.55s var(--ease-out), height 0.55s var(--ease-out), width 0.55s var(--ease-out);
-    }
-
-    .pw-stage {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-tertiary);
-      cursor: pointer;
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
-      transition: color 0.15s, background 0.15s;
-      font-family: var(--sans);
-    }
-
-    .pw-stage:hover { color: var(--text-secondary); background: var(--bg-hover); }
-
-    .pw-stage.active { color: var(--accent); }
-    .pw-stage.active:hover { background: transparent; }
-
-    .pw-stage-num {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .pw-stage-num { transition: background 0.35s, color 0.35s, border-color 0.35s, scale 0.45s var(--ease-out); }
-
-    .pw-stage.active .pw-stage-num {
-      background: var(--accent);
-      color: var(--bg);
-      border-color: var(--accent);
-      scale: 1.08;
-    }
-
-    .pw-stage.gate::after {
-      content: attr(data-gate-label);
-      font-size: 9px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--accent-dim);
-      margin-left: auto;
-      background: rgba(212, 168, 75, 0.1);
-      padding: 2px 6px;
-      border-radius: 3px;
-    }
-
-    .pw-content {
-      padding: 20px;
-    }
-
-    .pw-content-title {
-      font-family: var(--serif);
-      font-size: 18px;
-      color: var(--text);
-      margin-bottom: 8px;
-      animation: panelIn 0.6s var(--ease-out) both;
-    }
-
-    .pw-content-desc {
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      animation: panelIn 0.6s var(--ease-out) 0.06s both;
-    }
-
-    @keyframes panelIn {
-      from { opacity: 0; translate: 0 8px; filter: blur(4px); }
-      to { opacity: 1; translate: none; filter: none; }
-    }
-
-    .pw-steps {
-      list-style: none;
-    }
-
-    .pw-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 6px 0;
-      font-size: 12px;
-      color: var(--text-secondary);
-      animation: stepIn 0.5s var(--ease-out) both;
-      animation-delay: calc(0.14s + var(--si, 0) * 0.09s);
-    }
-
-    @keyframes stepIn {
-      from { opacity: 0; translate: -10px 0; }
-      to { opacity: 1; translate: none; }
-    }
-
-    .pw-step-icon {
-      position: relative;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
-      font-size: 9px;
-    }
-
-    .pw-step-icon.done {
-      background: #30a46c;
-      color: #fff;
-      animation: iconPop 0.5s var(--ease-out) both;
-      animation-delay: calc(0.26s + var(--si, 0) * 0.09s);
-    }
-
-    @keyframes iconPop {
-      from { scale: 0.3; opacity: 0; }
-      60% { scale: 1.15; opacity: 1; }
-      to { scale: 1; }
-    }
-
-    .pw-step-icon.current { background: var(--accent); color: var(--bg); }
-
-    .pw-step-icon.current::after {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 1px solid var(--accent);
-      animation: ring 1.8s var(--ease-out) infinite;
-    }
-
-    @keyframes ring {
-      from { opacity: 0.9; scale: 0.75; }
-      to { opacity: 0; scale: 1.7; }
-    }
-
-    .pw-step-icon.pending { background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-tertiary); }
-
-    /* ── Section shared ── */
-    section { padding: 80px 0; }
-
-    .section-label {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3.5vw, 40px);
-      line-height: 1.2;
-      color: var(--text);
-      margin-bottom: 16px;
-    }
-
-    .section-desc {
-      font-size: 17px;
-      line-height: 1.7;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin-bottom: 48px;
-    }
-
-    /* ── Pipeline Section ── */
-    .pipeline-section { border-top: 1px solid var(--border); }
-
-    .pipeline-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .pipeline-card {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 28px 24px;
-      transition: border-color 0.25s, transform 0.35s var(--ease-out);
-      --extra-t: transform 0.35s var(--ease-out), border-color 0.25s;
-    }
-
-    .pipeline-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
-
-    /* Pointer-following spotlight shared by every card */
-    .spot { position: relative; isolation: isolate; }
-
-    .spot::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      border-radius: inherit;
-      pointer-events: none;
-      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(212, 168, 75, 0.09), transparent 42%);
-      opacity: 0;
-      transition: opacity 0.35s;
-    }
-
-    .spot:hover::before { opacity: 1; }
-
-    .pipeline-card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .pipeline-card-num {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      font-size: 14px;
-      font-weight: 600;
-      background: var(--accent-glow);
-      color: var(--accent);
-      border: 1px solid rgba(212, 168, 75, 0.2);
-      flex-shrink: 0;
-    }
-
-    .pipeline-card-title {
-      font-family: var(--serif);
-      font-size: 20px;
-      color: var(--text);
-    }
-
-    .pipeline-card-desc {
-      font-size: 14px;
-      line-height: 1.65;
-      color: var(--text-secondary);
-    }
-
-    .pipeline-card-badge {
-      display: inline-block;
-      margin-top: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--accent);
-      background: var(--accent-glow);
-      padding: 4px 10px;
-      border-radius: 4px;
-    }
-
-    /* ── Differentiators ── */
-    .diff-section { border-top: 1px solid var(--border); }
-
-    .diff-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    .diff-card {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 28px 24px;
-      transition: border-color 0.25s, transform 0.35s var(--ease-out);
-      --extra-t: transform 0.35s var(--ease-out), border-color 0.25s;
-    }
-
-    .diff-card:hover { border-color: var(--border-light); transform: translateY(-3px); }
-
-    .js .diff-card-icon svg > * {
-      stroke-dasharray: 1;
-      stroke-dashoffset: 1;
-      transition: stroke-dashoffset 1.3s var(--ease-out);
-      transition-delay: calc(0.35s + var(--i, 0) * 0.09s);
-    }
-
-    .js .diff-card.in-view .diff-card-icon svg > * { stroke-dashoffset: 0; }
-
-    .diff-card-icon { transition: scale 0.45s var(--ease-out), background 0.3s; }
-    .diff-card:hover .diff-card-icon { scale: 1.08; background: rgba(212, 168, 75, 0.18); }
-
-    .diff-card-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius);
-      background: var(--accent-glow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      font-size: 18px;
-    }
-
-    .diff-card-title {
-      font-family: var(--serif);
-      font-size: 18px;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .diff-card-desc {
-      font-size: 14px;
-      line-height: 1.65;
-      color: var(--text-secondary);
-    }
-
-    /* ── Case Studies ── */
-    .cases-section { border-top: 1px solid var(--border); }
-
-    .case-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .case-item {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 24px 28px;
-      transition: border-color 0.25s, transform 0.35s var(--ease-out);
-      --extra-t: transform 0.35s var(--ease-out), border-color 0.25s;
-    }
-
-    .case-item:hover { border-color: var(--border-light); transform: translateX(4px); }
-
-    .case-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .case-repo {
-      font-family: var(--serif);
-      font-size: 18px;
-      color: var(--text);
-    }
-
-    .case-stars { height: 18px; opacity: 0.9; }
-
-    .case-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #30a46c;
-      background: rgba(48, 164, 108, 0.1);
-      padding: 4px 10px;
-      border-radius: 4px;
-    }
-
-    .case-status::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #30a46c;
-    }
-
-    .case-item.in-view .case-status::before { animation: mergedPulse 2.6s var(--ease-out) 0.8s infinite; }
-
-    @keyframes mergedPulse {
-      0% { box-shadow: 0 0 0 0 rgba(48, 164, 108, 0.55); }
-      70%, 100% { box-shadow: 0 0 0 7px rgba(48, 164, 108, 0); }
-    }
-
-    .case-summary {
-      font-size: 14px;
-      line-height: 1.65;
-      color: var(--text-secondary);
-    }
-
-    .case-detail {
-      font-size: 13px;
-      color: var(--text-tertiary);
-      margin-top: 8px;
-    }
-
-    /* ── Install Section ── */
-    .install-section { margin: 28px 0 24px; scroll-margin-top: calc(var(--nav-h) + 24px); }
-    .install-section .install-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
-
-    .install-box {
-      position: relative;
-      isolation: isolate;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      max-width: 100%;
-    }
-
-    @property --ang {
-      syntax: '<angle>';
-      inherits: false;
-      initial-value: 0deg;
-    }
-
-    .install-box::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      padding: 1px;
-      pointer-events: none;
-      background: conic-gradient(from var(--ang), transparent 0 62%, rgba(242, 163, 60, 0.9) 82%, transparent 94%);
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity: 0;
-      transition: opacity 1s;
-      animation: borderSpin 5s linear infinite;
-    }
-
-    .install-box.in-view::before { opacity: 1; }
-
-    @keyframes borderSpin { to { --ang: 360deg; } }
-
-    .install-copy.copied { animation: iconPop 0.45s var(--ease-out); }
-
-    .install-code {
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-      font-size: 15px;
-      color: var(--accent);
-      white-space: nowrap;
-    }
-
-    .install-copy {
-      background: none;
-      border: none;
-      color: var(--text-tertiary);
-      cursor: pointer;
-      padding: 4px;
-      font-size: 16px;
-      transition: color 0.15s;
-    }
-
-    .install-copy:hover { color: var(--text); }
-
-    .install-hint {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 10px;
-    }
-
-    /* ── Footer ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-    }
-
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .footer-left {
-      font-size: 13px;
-      color: var(--text-tertiary);
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-tertiary);
-    }
-
-    .footer-links a:hover { color: var(--text-secondary); }
-
-    /* ── Reveal: one-shot, settles fully visible ──
-       Gated on .js so content never hides without the script. Uses the
-       individual `translate`/`scale` properties so hover `transform`s compose
-       instead of fighting the entrance. */
-    .js [data-reveal] {
-      --d: calc(var(--i, 0) * 90ms);
-      opacity: 0;
-      translate: 0 28px;
-      transition:
-        opacity 0.9s var(--ease-out) var(--d),
-        translate 1.1s var(--ease-out) var(--d),
-        scale 1.1s var(--ease-out) var(--d),
-        var(--extra-t, border-color 0.25s);
-    }
-
-    .js [data-reveal].in-view { opacity: 1; translate: none; scale: none; }
-
-    /* :where keeps these start states below .in-view's specificity */
-    .js :where(.pipeline-widget)[data-reveal] { translate: 0 36px; scale: 0.96; }
-    .js :where(.case-item)[data-reveal] { translate: -24px 0; }
-
-    /* Word-by-word mask rise for headlines */
-    .w {
-      display: inline-block;
-      overflow: hidden;
-      vertical-align: top;
-      padding: 0 0.08em 0.14em;
-      margin: 0 -0.08em -0.14em;
-    }
-
-    .w > span { display: inline-block; }
-
-    .js [data-split] .w > span {
-      translate: 0 112%;
-      transition: translate 1s var(--ease-out) calc(var(--wi, 0) * 42ms + var(--i, 0) * 90ms);
-    }
-
-    .js [data-split].in-view .w > span { translate: none; }
-    .js [data-reveal][data-split] { opacity: 1; translate: none; }
-
-    /* ── Pipeline chapter: sticky scroll story (desktop) ── */
-    .chapter-rail { display: none; }
-
-    .pipeline-section.chapter-on { padding: 0; }
-
-    .chapter-on .chapter-stage {
-      position: sticky;
-      top: var(--nav-h);
-      height: calc(100vh - var(--nav-h));
-      display: grid;
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: 72px;
-      align-items: center;
-    }
-
-    .chapter-on .section-desc { margin-bottom: 36px; }
-
-    .chapter-on .chapter-rail {
-      display: block;
-      position: relative;
-      list-style: none;
-      padding-left: 30px;
-      --rp: 0;
-    }
-
-    .chapter-rail::before,
-    .chapter-rail::after {
-      content: '';
-      position: absolute;
-      left: 5px;
-      top: 14px;
-      bottom: 14px;
-      width: 1px;
-      background: var(--border-light);
-    }
-
-    .chapter-rail::after {
-      left: 4.5px;
-      width: 2px;
-      background: linear-gradient(var(--brand-gold), var(--brand-orange));
-      transform: scaleY(var(--rp));
-      transform-origin: top;
-    }
-
-    .rail-item button {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      padding: 7px 0;
-      background: none;
-      border: 0;
-      color: var(--text-tertiary);
-      font: 500 14px/1.4 var(--sans);
-      text-align: left;
-      cursor: pointer;
-      transition: color 0.35s, translate 0.45s var(--ease-out);
-    }
-
-    .rail-item button::before {
-      content: '';
-      position: absolute;
-      left: -30px;
-      top: 50%;
-      width: 11px;
-      height: 11px;
-      margin-top: -5.5px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 1px solid var(--border-light);
-      transition: background 0.35s, border-color 0.35s, box-shadow 0.35s, scale 0.45s var(--ease-out);
-    }
-
-    .rail-item button:hover { color: var(--text-secondary); }
-    .rail-item.done button::before { background: var(--accent-dim); border-color: var(--accent-dim); }
-    .rail-item.active button { color: var(--text); translate: 4px 0; }
-
-    .rail-item.active button::before {
-      background: var(--accent);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 5px rgba(212, 168, 75, 0.15);
-      scale: 1.15;
-    }
-
-    .rail-num { width: 20px; font-size: 12px; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
-
-    .rail-gate {
-      font-size: 9px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--accent-dim);
-      background: rgba(212, 168, 75, 0.1);
-      padding: 2px 6px;
-      border-radius: 3px;
-    }
-
-    /* The grid becomes one fixed card frame; stage cards are transparent
-       content layers that hand off inside it without overlapping. */
-    .chapter-on .pipeline-grid {
-      display: block;
-      position: relative;
-      height: min(420px, 60vh);
-      background: var(--bg-raised);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: 0 40px 100px -50px rgba(0, 0, 0, 0.9);
-    }
-
-    .js .chapter-on .pipeline-grid .pipeline-card[data-reveal] {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 48px;
-      background: transparent;
-      border: 0;
-      border-radius: 0;
-      opacity: var(--co, 0);
-      translate: none;
-      scale: none;
-      transform: translate3d(0, var(--cy, 0px), 0) scale(var(--cs, 1));
-      transition: none;
-      will-change: opacity, transform;
-    }
-
-    .chapter-on .pipeline-card:not(.is-active) { pointer-events: none; }
-    .chapter-on .pipeline-card-header { gap: 16px; margin-bottom: 20px; }
-    .chapter-on .pipeline-card-num { width: 44px; height: 44px; font-size: 17px; }
-    .chapter-on .pipeline-card-title { font-size: 36px; }
-    .chapter-on .pipeline-card-desc { font-size: 18px; line-height: 1.7; max-width: 44ch; }
-    .chapter-on .pipeline-card-badge { align-self: flex-start; margin-top: 24px; font-size: 12px; }
-
-    .chapter-on .pipeline-card::after {
-      content: attr(data-step);
-      position: absolute;
-      right: 28px;
-      bottom: -48px;
-      z-index: -1;
-      font-family: var(--serif);
-      font-size: 240px;
-      line-height: 1;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(212, 168, 75, 0.16);
-      pointer-events: none;
-      translate: 0 calc(var(--cy, 0px) * -0.8);
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .hero-grid {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .pipeline-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .pw-body {
-        grid-template-columns: 1fr;
-      }
-
-      .pw-sidebar {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        overflow-x: auto;
-        padding: 0;
-      }
-
-      .pw-stage {
-        white-space: nowrap;
-        padding: 12px 14px;
-      }
-
-      .pw-indicator {
-        top: auto;
-        bottom: 0;
-        width: var(--iw, 80px);
-        height: 2px;
-        transform: translate3d(var(--ix, 0), 0, 0);
-        background: var(--accent);
-        border-right: 0;
-      }
-
-      .pw-stage.gate::after { display: none; }
-    }
-
-    @media (max-width: 640px) {
-      .hero { padding: 48px 0 40px; }
-      section { padding: 56px 0; }
-
-      .nav-links { display: none; }
-      .nav-links.open {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 64px;
-        left: 0;
-        right: 0;
-        background: var(--bg-raised);
-        border-bottom: 1px solid var(--border);
-        padding: 16px 24px;
-        gap: 16px;
-      }
-
-      .nav-links .lang-toggle { align-self: flex-start; }
-
-      .mobile-toggle { display: block; }
-
-      .pipeline-grid,
-      .diff-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-actions { flex-direction: column; }
-      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
-
-      .install-box { flex-direction: column; text-align: center; }
-      .install-code { font-size: 13px; word-break: break-all; white-space: normal; }
-
-      .case-header { flex-direction: column; align-items: flex-start; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-
-      .js [data-reveal],
-      .js [data-split] .w > span,
-      .js .diff-card-icon svg > * {
-        opacity: 1 !important;
-        translate: none !important;
-        scale: none !important;
-        stroke-dashoffset: 0 !important;
-        transition: none !important;
-      }
-
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-delay: 0s !important;
-        animation-iteration-count: 1 !important;
-      }
-
-      .hero-glow, .install-box::before { animation: none !important; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Navigation -->
-  <nav>
-    <div class="container nav-inner">
-      <a href="#" class="nav-brand">land<span>able</span></a>
-      <button class="mobile-toggle" aria-label="Toggle navigation" aria-expanded="false" id="navToggle">&#9776;</button>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#pipeline" data-i18n="nav_pipeline">Pipeline</a></li>
-        <li><a href="#approach" data-i18n="nav_approach">Approach</a></li>
-        <li><a href="#results" data-i18n="nav_results">Results</a></li>
-        <li><a href="#install" class="nav-cta" data-i18n="nav_cta">Get Started</a></li>
-        <li>
-          <div class="lang-toggle" role="group" aria-label="Language">
-            <button class="active" data-lang="en">EN</button>
-            <button data-lang="zh">中</button>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <div class="scroll-progress" aria-hidden="true"></div>
-  </nav>
-
-  <!-- Hero -->
-  <section class="hero" id="top">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="container">
-      <div class="hero-grid">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>landable — Find your place in open source</title>
+    <meta
+      name="description"
+      content="Find open-source projects worth joining early. An agent skill that follows your interests, checks real contribution openings, and helps your work land — with you choosing at every stage."
+    />
+    <meta name="theme-color" content="#091426" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      property="og:title"
+      content="landable — Find your place in open source"
+    />
+    <meta
+      property="og:description"
+      content="Follow your interests. Find a real opening. Make a contribution that belongs."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link
+      rel="preload"
+      href="./fonts/manrope.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./story.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+    <header class="site-header wrap">
+      <a class="wordmark" href="#" aria-label="landable home">
+        <svg
+          class="brand-icon"
+          viewBox="0 0 40 40"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M10 8v12c0 7 4 11 11 11h10M10 17c0 7 5 10 12 10"
+            stroke="currentColor"
+            stroke-width="1.7"
+          />
+          <circle
+            cx="10"
+            cy="7"
+            r="4"
+            fill="#091426"
+            stroke="currentColor"
+            stroke-width="1.7"
+          />
+          <circle
+            cx="31"
+            cy="31"
+            r="4"
+            fill="#091426"
+            stroke="currentColor"
+            stroke-width="1.7"
+          />
+          <path
+            d="m28.5 31 1.8 1.8 3.2-3.7"
+            stroke="currentColor"
+            stroke-width="1.3"
+          />
+        </svg>
+        <span>landable<span class="wordmark-period">.</span></span>
+      </a>
+      <button
+        class="menu-toggle enhanced-only"
+        type="button"
+        aria-expanded="false"
+        aria-controls="navigation"
+        data-i18n="menu"
+      >
+        Menu
+      </button>
+      <nav id="navigation" aria-label="Main navigation">
+        <a href="#approach" data-i18n="navApproach">The approach</a>
+        <a href="#journey" data-i18n="navJourney">The journey</a>
+        <a href="#contributions" data-i18n="navWork">Landed work</a>
+        <div class="language-switch enhanced-only" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">EN</button
+          ><span aria-hidden="true">/</span
+          ><button type="button" data-lang="zh" aria-pressed="false">
+            中文
+          </button>
+        </div>
+        <a
+          class="nav-github"
+          href="https://github.com/Momoyeyu/landable"
+          aria-label="landable on GitHub"
+          ><svg
+            width="19"
+            height="19"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"
+            /></svg
+        ></a>
+      </nav>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="hero wrap" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <h1 class="hero-tagline" data-reveal="0" data-split data-i18n="hero_tagline">The patch is rarely the hard part — <em>knowing where it can land</em> is.</h1>
-          <p class="hero-desc" data-reveal="5" data-i18n="hero_desc">landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.</p>
-          <!-- Install -->
-          <div class="install-section" id="install">
-            <h2 class="install-title" data-reveal="6" data-i18n="install_title">Install the skill</h2>
-            <div class="install-box" data-reveal="6">
-              <code class="install-code" id="installCode">npx skills add Momoyeyu/landable -g</code>
-              <button class="install-copy" aria-label="Copy install command" id="copyBtn" title="Copy to clipboard">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              </button>
+          <div class="intro-mark" aria-hidden="true">
+            <span></span
+            ><svg viewBox="0 0 26 26">
+              <path
+                d="M13 0 15.5 10.5 26 13 15.5 15.5 13 26 10.5 15.5 0 13 10.5 10.5Z"
+                fill="currentColor"
+              /></svg
+            ><span></span>
+          </div>
+          <h1 id="hero-title" data-i18n="heroTitle">
+            Find your place<br />in open source.
+          </h1>
+          <p class="hero-description" data-i18n="heroDescription">
+            Discover growing projects that fit your interests. Check that
+            contributions are welcome. Turn a real opening into a carefully
+            tested pull request.
+          </p>
+          <p class="product-definition" data-i18n="definition">
+            Landable is an agent skill for open-source contributors.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#start"
+              ><span data-i18n="heroCta">Find my starting point</span
+              ><svg
+                width="19"
+                height="19"
+                viewBox="0 0 20 20"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5 5h10v10M15 5 5 15"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                /></svg></a
+            ><a class="quiet-link" href="#journey" data-i18n="heroSecondary"
+              >See how it unfolds</a
+            >
+          </div>
+          <div class="hero-note">
+            <span class="small-branch" aria-hidden="true">⑂</span
+            ><span data-i18n="heroNote"
+              >Your interests set the direction.<br />You choose the next
+              step.</span
+            >
+          </div>
+        </div>
+
+        <figure class="atlas" aria-labelledby="atlas-caption">
+          <div class="atlas-corner corner-top" aria-hidden="true"></div>
+          <div class="atlas-corner corner-bottom" aria-hidden="true"></div>
+          <div class="atlas-coordinates" aria-hidden="true">
+            <span data-i18n="chartCoordinates">A field of possibilities</span
+            ><span>✧</span>
+          </div>
+          <div class="atlas-plane">
+            <svg
+              class="star-chart"
+              viewBox="0 0 720 620"
+              fill="none"
+              aria-hidden="true"
+            >
+              <defs>
+                <radialGradient id="atlas-glow">
+                  <stop stop-color="#6eaaa0" stop-opacity=".16" />
+                  <stop offset="1" stop-color="#091426" stop-opacity="0" />
+                </radialGradient>
+                <linearGradient
+                  id="route-color"
+                  x1="130"
+                  y1="450"
+                  x2="550"
+                  y2="160"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#9edbc7" stop-opacity=".2" />
+                  <stop offset=".5" stop-color="#b6b1eb" />
+                  <stop offset="1" stop-color="#9edbc7" />
+                </linearGradient>
+                <filter
+                  id="star-glow"
+                  x="-150%"
+                  y="-150%"
+                  width="400%"
+                  height="400%"
+                >
+                  <feGaussianBlur stdDeviation="4" />
+                </filter>
+                <pattern
+                  id="atlas-grid"
+                  width="42"
+                  height="42"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M0 1h2M1 0v2"
+                    stroke="#8eb4ce"
+                    stroke-opacity=".15"
+                  />
+                </pattern>
+              </defs>
+              <circle cx="385" cy="294" r="300" fill="url(#atlas-glow)" />
+              <path d="M30 20h660v540H30z" fill="url(#atlas-grid)" />
+              <g
+                class="chart-orbits"
+                transform="rotate(-26 370 294)"
+                stroke="#8fb1cc"
+              >
+                <ellipse
+                  cx="370"
+                  cy="294"
+                  rx="300"
+                  ry="204"
+                  stroke-opacity=".16"
+                />
+                <ellipse
+                  cx="370"
+                  cy="294"
+                  rx="276"
+                  ry="182"
+                  stroke-opacity=".08"
+                />
+                <ellipse
+                  cx="370"
+                  cy="294"
+                  rx="230"
+                  ry="143"
+                  stroke-opacity=".14"
+                />
+                <ellipse
+                  cx="370"
+                  cy="294"
+                  rx="165"
+                  ry="103"
+                  stroke-opacity=".08"
+                />
+                <path
+                  d="M46 294h648M370 70v448"
+                  stroke-opacity=".08"
+                  stroke-dasharray="3 9"
+                />
+                <path
+                  d="M70 290v8m600-8v8M366 90h8m-8 408h8"
+                  stroke-opacity=".55"
+                />
+              </g>
+              <g class="background-stars"></g>
+              <g
+                class="constellations"
+                stroke="#839eb9"
+                stroke-opacity=".28"
+                stroke-width=".8"
+              >
+                <path
+                  d="m105 304 54-44 28-93 92 39 50-83 91 48 73-66 78 75 72-12M187 167l53 107 89-151M240 274l51 70-46 92-86-29-54-103M291 344l111-52 95 80 73 35 50-75M420 171l-18 121 91-187M497 372l-8 106-112-38-86-96M159 407l18 90 68-61M570 180l-54 64 104 88"
+                />
+              </g>
+              <g class="route route-ai">
+                <path
+                  d="M118 460C216 474 184 342 291 344S355 243 402 292 464 291 516 244 508 167 570 180"
+                  stroke="url(#route-color)"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="570"
+                  cy="180"
+                  r="17"
+                  stroke="#9edbc7"
+                  stroke-opacity=".35"
+                />
+                <circle
+                  cx="570"
+                  cy="180"
+                  r="27"
+                  stroke="#9edbc7"
+                  stroke-opacity=".12"
+                />
+              </g>
+              <g class="route route-systems">
+                <path
+                  d="M118 460C170 472 210 377 291 344S352 242 402 292 451 339 497 372 377 440 245 436"
+                  stroke="url(#route-color)"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="245"
+                  cy="436"
+                  r="17"
+                  stroke="#9edbc7"
+                  stroke-opacity=".35"
+                />
+                <circle
+                  cx="245"
+                  cy="436"
+                  r="27"
+                  stroke="#9edbc7"
+                  stroke-opacity=".12"
+                />
+              </g>
+              <g class="route route-tools">
+                <path
+                  d="M118 460C180 440 210 377 291 344S352 242 402 292 360 205 279 206 220 210 187 167"
+                  stroke="url(#route-color)"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="187"
+                  cy="167"
+                  r="17"
+                  stroke="#9edbc7"
+                  stroke-opacity=".35"
+                />
+                <circle
+                  cx="187"
+                  cy="167"
+                  r="27"
+                  stroke="#9edbc7"
+                  stroke-opacity=".12"
+                />
+              </g>
+              <g fill="#abc1d3">
+                <circle cx="105" cy="304" r="2" />
+                <circle cx="159" cy="260" r="2.5" />
+                <circle cx="279" cy="206" r="2" />
+                <circle cx="329" cy="123" r="3" />
+                <circle cx="420" cy="171" r="2" />
+                <circle cx="493" cy="105" r="3" />
+                <circle cx="642" cy="168" r="1.5" />
+                <circle cx="240" cy="274" r="2" />
+                <circle cx="291" cy="344" r="3" />
+                <circle cx="159" cy="407" r="2" />
+                <circle cx="177" cy="497" r="2" />
+                <circle cx="497" cy="372" r="2.5" />
+                <circle cx="570" cy="407" r="3" />
+                <circle cx="620" cy="332" r="2" />
+                <circle cx="489" cy="478" r="2" />
+                <circle cx="377" cy="440" r="2" />
+                <circle cx="516" cy="244" r="2.5" />
+              </g>
+              <g transform="translate(402 292)">
+                <circle r="42" stroke="#b6b1eb" stroke-opacity=".2" />
+                <circle
+                  r="32"
+                  fill="#153248"
+                  stroke="#b6b1eb"
+                  stroke-opacity=".5"
+                />
+                <circle
+                  r="21"
+                  fill="#b6b1eb"
+                  opacity=".12"
+                  filter="url(#star-glow)"
+                />
+                <path
+                  d="M-10-13v14c0 8 5 12 13 12h10M-10-3c0 7 6 9 13 9"
+                  stroke="#d6d1f3"
+                  stroke-width="1.7"
+                />
+                <circle
+                  cx="-10"
+                  cy="-15"
+                  r="3.5"
+                  fill="#153248"
+                  stroke="#d6d1f3"
+                  stroke-width="1.5"
+                />
+                <circle
+                  cx="14"
+                  cy="13"
+                  r="3.5"
+                  fill="#153248"
+                  stroke="#d6d1f3"
+                  stroke-width="1.5"
+                />
+              </g>
+              <g transform="translate(118 460)">
+                <circle r="5" fill="#091426" stroke="#9edbc7" />
+                <path
+                  d="M-10 0h-6m26 0h6M0-10v-6M0 10v6"
+                  stroke="#9edbc7"
+                  stroke-opacity=".5"
+                />
+              </g>
+              <g
+                fill="#b8cbda"
+                font-family="Manrope, sans-serif"
+                font-size="10"
+              >
+                <text x="79" y="496" data-i18n="chartYou">Your interests</text>
+                <text x="338" y="352" fill="#c6bfeb" data-i18n="chartFit">
+                  A contribution that fits
+                </text>
+                <text x="553" y="433">UniRL</text>
+              </g>
+              <path
+                d="m608 83 2 7 7 2-7 2-2 7-2-7-7-2 7-2Z"
+                fill="#e4cca0"
+                opacity=".6"
+              />
+              <path
+                d="m94 166 1.5 5 5 1.5-5 1.5-1.5 5-1.5-5-5-1.5 5-1.5Z"
+                fill="#b6b1eb"
+                opacity=".7"
+              />
+            </svg>
+            <button
+              class="repo-star repo-tools enhanced-only"
+              data-interest="tools"
+              aria-pressed="false"
+            >
+              <span class="star-point"></span
+              ><span class="star-name"
+                >archify<span data-i18n="toolsTag">Developer tools</span></span
+              >
+            </button>
+            <button
+              class="repo-star repo-ai enhanced-only"
+              data-interest="ai"
+              aria-pressed="false"
+            >
+              <span class="star-point"></span
+              ><span class="star-name"
+                >Soup<span data-i18n="aiTag">AI & learning</span></span
+              >
+            </button>
+            <button
+              class="repo-star repo-systems enhanced-only"
+              data-interest="systems"
+              aria-pressed="true"
+            >
+              <span class="star-point"></span
+              ><span class="star-name"
+                >kvcached<span data-i18n="systemsTag"
+                  >Systems & infra</span
+                ></span
+              >
+            </button>
+          </div>
+          <div class="atlas-observation" aria-live="polite" aria-atomic="true">
+            <span class="observation-mark" aria-hidden="true">⌁</span>
+            <div>
+              <p class="observation-repo">ovg-project / kvcached</p>
+              <a
+                class="observation-link"
+                href="https://github.com/ovg-project/kvcached/pull/519"
+                ><span class="observation-title" data-i18n="observationTitle"
+                  >A small fix. A real opening.</span
+                ><span aria-hidden="true">↗</span></a
+              >
+              <p class="observation-detail" data-i18n="observationDetail">
+                A Unix socket race, traced and resolved.
+              </p>
             </div>
-            <p class="install-hint" data-reveal="7" data-i18n="install_hint">Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.</p>
+            <span class="merged-dot" aria-hidden="true"></span>
           </div>
-          <div class="hero-actions" data-reveal="8">
-            <a href="#pipeline" class="btn-primary" data-i18n="hero_cta_primary">See how it works</a>
-            <a href="https://github.com/Momoyeyu/landable" class="btn-secondary">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-              <span data-i18n="hero_cta_github">View on GitHub</span>
-            </a>
-          </div>
-        </div>
+          <figcaption id="atlas-caption">
+            <span data-i18n="atlasCaption"
+              >Real contributions, drawn as a constellation.</span
+            ><span class="atlas-counter" aria-hidden="true">✧</span>
+          </figcaption>
+        </figure>
+      </section>
 
-        <!-- Interactive Pipeline Widget -->
-        <div class="pipeline-widget" data-reveal="4" role="region" aria-label="Pipeline demonstration">
-          <div class="pw-titlebar">
-            <div class="pw-dot"></div>
-            <div class="pw-dot"></div>
-            <div class="pw-dot"></div>
-            <span class="pw-title">landable workspace</span>
-            <span class="pw-timer" aria-hidden="true"></span>
-          </div>
-          <div class="pw-body">
-            <div class="pw-sidebar" role="tablist" aria-label="Pipeline stages">
-              <span class="pw-indicator" aria-hidden="true"></span>
-              <button class="pw-stage active" role="tab" aria-selected="true" data-stage="0" data-gate-label="">
-                <span class="pw-stage-num">1</span> <span data-i18n="pw_s1">Profile</span>
-              </button>
-              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="1" data-gate-label="gate">
-                <span class="pw-stage-num">2</span> <span data-i18n="pw_s2">Scout</span>
-              </button>
-              <button class="pw-stage gate" role="tab" aria-selected="false" data-stage="2" data-gate-label="gate">
-                <span class="pw-stage-num">3</span> <span data-i18n="pw_s3">Assess</span>
-              </button>
-              <button class="pw-stage" role="tab" aria-selected="false" data-stage="3" data-gate-label="">
-                <span class="pw-stage-num">4</span> <span data-i18n="pw_s4">Implement</span>
-              </button>
-              <button class="pw-stage" role="tab" aria-selected="false" data-stage="4" data-gate-label="">
-                <span class="pw-stage-num">5</span> <span data-i18n="pw_s5">Ship</span>
-              </button>
-              <button class="pw-stage" role="tab" aria-selected="false" data-stage="5" data-gate-label="">
-                <span class="pw-stage-num">6</span> <span data-i18n="pw_s6">Track</span>
-              </button>
+      <div class="horizon wrap">
+        <span data-i18n="horizon">Less wandering. More belonging.</span>
+        <div></div>
+        <a href="#approach" aria-label="Explore the approach">↓</a>
+      </div>
+
+      <section
+        class="approach wrap section-space"
+        id="approach"
+        tabindex="-1"
+        aria-labelledby="approach-title"
+      >
+        <div class="section-intro">
+          <p class="section-context" data-i18n="approachContext">
+            The right project changes everything
+          </p>
+          <h2 id="approach-title" data-i18n="approachTitle">
+            A good patch needs<br />a place to land.
+          </h2>
+          <p data-i18n="approachBody">
+            A trending repository can catch your eye and still be the wrong
+            place to contribute. Landable looks past the stars, before you spend
+            your time.
+          </p>
+        </div>
+        <div class="evidence-list">
+          <article>
+            <svg viewBox="0 0 28 28" aria-hidden="true">
+              <circle cx="8" cy="7" r="3" />
+              <circle cx="20" cy="21" r="3" />
+              <path d="M8 10v5c0 4 3 6 9 6M20 4v14M17 7l3-3 3 3" />
+            </svg>
+            <div>
+              <h3 data-i18n="evidence1Title">Are new contributors welcomed?</h3>
+              <p data-i18n="evidence1Body">
+                Look at who actually gets merged and how maintainers respond. A
+                contribution guide is a start. Recent history is evidence.
+              </p>
             </div>
-            <div class="pw-content" role="tabpanel" id="pwPanel">
+          </article>
+          <article>
+            <svg viewBox="0 0 28 28" aria-hidden="true">
+              <circle cx="14" cy="14" r="9" />
+              <circle cx="14" cy="14" r="3" />
+              <path d="M14 1v4m0 18v4M1 14h4m18 0h4" />
+            </svg>
+            <div>
+              <h3 data-i18n="evidence2Title">
+                Is there a real opening for you?
+              </h3>
+              <p data-i18n="evidence2Body">
+                Match the stack, scope, and hardware to what you can finish.
+                Check existing claims. Follow the cause into dependencies.
+              </p>
+            </div>
+          </article>
+          <article>
+            <svg viewBox="0 0 28 28" aria-hidden="true">
+              <path
+                d="M7 4h14v20H7zM11 10h6m-6 4h6m-6 4h3M4 8h3m-3 5h3m-3 5h3"
+              />
+            </svg>
+            <div>
+              <h3 data-i18n="evidence3Title">Will the work belong here?</h3>
+              <p data-i18n="evidence3Body">
+                Read the project’s rules, tests, and review expectations.
+                Propose architectural changes before building them. Respect work
+                already claimed.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="journey-section"
+        id="journey"
+        tabindex="-1"
+        aria-labelledby="journey-title"
+      >
+        <div class="wrap">
+          <div class="journey-heading">
+            <div>
+              <p class="section-context" data-i18n="journeyContext">
+                From curiosity to contribution
+              </p>
+              <h2 id="journey-title" data-i18n="journeyTitle">
+                A clear path.<br />Room for your judgment.
+              </h2>
+            </div>
+            <p data-i18n="journeyBody">
+              Six stages, each ending with something you can inspect and a
+              choice that’s yours. Nothing moves to the next stage without your
+              answer.
+            </p>
+          </div>
+          <div
+            class="journey-stages"
+            role="group"
+            aria-label="Contribution stages"
+          >
+            <button
+              type="button"
+              class="stage-button"
+              disabled
+              data-stage="0"
+              aria-pressed="false"
+            >
+              <span class="stage-dot"></span
+              ><span data-i18n="stage0">Profile</span
+              ><span class="stage-number">01</span>
+            </button>
+            <button
+              type="button"
+              class="stage-button"
+              disabled
+              data-stage="1"
+              aria-pressed="false"
+            >
+              <span class="stage-dot"></span
+              ><span data-i18n="stage1">Scout</span
+              ><span class="stage-number">02</span>
+            </button>
+            <button
+              type="button"
+              class="stage-button"
+              disabled
+              data-stage="2"
+              aria-pressed="true"
+            >
+              <span class="stage-dot"></span
+              ><span data-i18n="stage2">Assess</span
+              ><span class="stage-number">03</span>
+            </button>
+            <button
+              type="button"
+              class="stage-button"
+              disabled
+              data-stage="3"
+              aria-pressed="false"
+            >
+              <span class="stage-dot"></span
+              ><span data-i18n="stage3">Implement</span
+              ><span class="stage-number">04</span>
+            </button>
+            <button
+              type="button"
+              class="stage-button"
+              disabled
+              data-stage="4"
+              aria-pressed="false"
+            >
+              <span class="stage-dot"></span><span data-i18n="stage4">Ship</span
+              ><span class="stage-number">05</span>
+            </button>
+            <button
+              type="button"
+              class="stage-button"
+              disabled
+              data-stage="5"
+              aria-pressed="false"
+            >
+              <span class="stage-dot"></span
+              ><span data-i18n="stage5">Track</span
+              ><span class="stage-number">06</span>
+            </button>
+          </div>
+          <div
+            class="journey-detail"
+            id="journey-detail"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <div class="journey-narrative">
+              <span class="detail-index" aria-hidden="true">03 / 06</span>
+              <h3 class="detail-title">
+                Look for evidence,<br />not just an invitation.
+              </h3>
+              <p class="detail-body">
+                Inspect acceptance history, issue responses, existing claims,
+                and where the fix actually belongs. Then judge whether you can
+                finish it with the resources you have.
+              </p>
+            </div>
+            <div class="artifact">
+              <div class="artifact-top">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="19"
+                  height="19"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7m-7 4h5"
+                    stroke="currentColor"
+                    stroke-width="1.3"
+                  /></svg
+                ><span data-i18n="artifactLabel">What you get back</span
+                ><span class="artifact-fold" aria-hidden="true"></span>
+              </div>
+              <h4 class="artifact-title">An issue menu, with evidence</h4>
+              <ul class="artifact-items">
+                <li>Who gets merged, and who gets a reply</li>
+                <li>Available issues and realistic scope</li>
+                <li>Confidence, constraints, and unknowns</li>
+              </ul>
+              <div class="human-choice">
+                <span class="choice-symbol" aria-hidden="true">◇</span>
+                <div>
+                  <span class="choice-label" data-i18n="choiceLabel"
+                    >Your next choice</span
+                  >
+                  <p class="choice-text">Which issues are worth pursuing?</p>
+                </div>
+              </div>
             </div>
           </div>
+          <noscript
+            ><p class="noscript-note">
+              Profile your interests → Scout projects → Assess openings →
+              Implement locally → Ship approved patches → Track CI and review.
+              Every stage ends with your choice.
+              <a
+                href="https://github.com/Momoyeyu/landable/blob/master/landable/SKILL.md"
+                >Read the complete skill</a
+              >.
+            </p></noscript
+          >
+          <p class="journey-promise">
+            <span aria-hidden="true">◇</span
+            ><span data-i18n="journeyPromise"
+              >You pick the issues before implementation. You review the patches
+              before anything is pushed.</span
+            >
+          </p>
         </div>
+      </section>
+
+      <section
+        class="contributions wrap section-space"
+        id="contributions"
+        tabindex="-1"
+        aria-labelledby="contributions-title"
+      >
+        <div class="work-heading">
+          <div>
+            <p class="section-context" data-i18n="workContext">
+              Small changes, real projects
+            </p>
+            <h2 id="contributions-title" data-i18n="workTitle">
+              This is what landing<br />looks like.
+            </h2>
+          </div>
+          <p data-i18n="workBody">
+            Selected contributions discovered through Landable. Each link leads
+            to a merged pull request. Past work, not a promise of acceptance.
+          </p>
+        </div>
+        <div class="work-list">
+          <article class="work-row">
+            <div class="work-symbol symbol-soup" aria-hidden="true">≈</div>
+            <div class="work-project">
+              <a href="https://github.com/MakazhanAlpamys/Soup">Soup</a
+              ><span data-i18n="workSoupType">LLM fine-tuning</span>
+            </div>
+            <p data-i18n="workSoupBody">
+              From MPS coverage to reliable answer scoring. Scoped to the
+              hardware and checked against real behavior.
+            </p>
+            <div class="pr-links" aria-label="Soup merged pull requests">
+              <a href="https://github.com/MakazhanAlpamys/Soup/pull/1375"
+                >#1375</a
+              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1471"
+                >#1471</a
+              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1490"
+                >#1490</a
+              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1533"
+                >#1533</a
+              ><a href="https://github.com/MakazhanAlpamys/Soup/pull/1630"
+                >#1630</a
+              >
+            </div>
+          </article>
+          <article class="work-row">
+            <div class="work-symbol symbol-kv" aria-hidden="true">⋈</div>
+            <div class="work-project">
+              <a href="https://github.com/ovg-project/kvcached">kvcached</a
+              ><span data-i18n="workKvType">GPU infrastructure</span>
+            </div>
+            <p data-i18n="workKvBody">
+              An old listener could delete a replacement’s live socket. Check
+              its identity before unlinking, and test the race.
+            </p>
+            <div class="pr-links" aria-label="kvcached merged pull requests">
+              <a href="https://github.com/ovg-project/kvcached/pull/519"
+                >#519</a
+              >
+            </div>
+          </article>
+          <article class="work-row">
+            <div class="work-symbol symbol-archify" aria-hidden="true">⌘</div>
+            <div class="work-project">
+              <a href="https://github.com/tt-a1i/archify">archify</a
+              ><span data-i18n="workArchifyType">Diagramming skill</span>
+            </div>
+            <p data-i18n="workArchifyBody">
+              Make endpoint errors actionable, improve repair suggestions, and
+              close the benchmark’s blind spots.
+            </p>
+            <div class="pr-links" aria-label="archify merged pull requests">
+              <a href="https://github.com/tt-a1i/archify/pull/654">#654</a
+              ><a href="https://github.com/tt-a1i/archify/pull/707">#707</a>
+            </div>
+          </article>
+          <article class="work-row">
+            <div class="work-symbol symbol-unirl" aria-hidden="true">✳</div>
+            <div class="work-project">
+              <a href="https://github.com/Tencent-Hunyuan/UniRL">UniRL</a
+              ><span data-i18n="workUniType">Multimodal RL</span>
+            </div>
+            <p data-i18n="workUniBody">
+              Remove verified dead helpers. Align rollout log-probabilities
+              while preserving training-side loss scaling.
+            </p>
+            <div class="pr-links" aria-label="UniRL merged pull requests">
+              <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/530"
+                >#530</a
+              ><a href="https://github.com/Tencent-Hunyuan/UniRL/pull/536"
+                >#536</a
+              >
+            </div>
+          </article>
+        </div>
+        <a
+          class="work-source quiet-link"
+          href="https://github.com/Momoyeyu/landable#does-it-land"
+          data-i18n="workSource"
+          >Read the contribution stories on GitHub</a
+        >
+      </section>
+
+      <section
+        class="start-section wrap"
+        id="start"
+        tabindex="-1"
+        aria-labelledby="start-title"
+      >
+        <div class="start-orbit" aria-hidden="true">
+          <svg viewBox="0 0 320 280" fill="none">
+            <ellipse
+              cx="160"
+              cy="140"
+              rx="145"
+              ry="85"
+              transform="rotate(-32 160 140)"
+              stroke="currentColor"
+            />
+            <ellipse
+              cx="160"
+              cy="140"
+              rx="125"
+              ry="68"
+              transform="rotate(-32 160 140)"
+              stroke="currentColor"
+              opacity=".4"
+            />
+            <circle cx="278" cy="72" r="4" fill="#9edbc7" />
+            <path
+              d="M160 120v27c0 11 10 17 22 17h21M160 139c0 11 8 15 18 15"
+              stroke="#b6b1eb"
+              stroke-width="2"
+            />
+            <circle cx="160" cy="116" r="6" stroke="#b6b1eb" stroke-width="2" />
+            <circle cx="208" cy="164" r="6" stroke="#b6b1eb" stroke-width="2" />
+          </svg>
+        </div>
+        <div class="start-copy">
+          <h2 id="start-title" data-i18n="startTitle">
+            Your next contribution<br />starts with you.
+          </h2>
+          <p data-i18n="startBody">
+            Install the skill. Tell your agent what you care about.<br />Find
+            somewhere worth putting your time.
+          </p>
+        </div>
+        <div class="start-install">
+          <div class="install-top">
+            <span data-i18n="installLabel">Add Landable to your agent</span
+            ><span>↙</span>
+          </div>
+          <div class="install-command">
+            <span class="command-prompt" aria-hidden="true">$</span
+            ><code>npx skills add Momoyeyu/landable -g</code
+            ><button
+              class="copy-button enhanced-only"
+              type="button"
+              aria-label="Copy installation command"
+            >
+              <svg
+                width="19"
+                height="19"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M9 9h11v12H9zM15 5V3H3v13h2"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                />
+              </svg>
+            </button>
+          </div>
+          <p class="copy-status" role="status" aria-live="polite"></p>
+          <p class="install-requirements" data-i18n="requirements">
+            Bring an agent that loads SKILL.md, Node.js, and an authenticated
+            GitHub CLI.
+          </p>
+          <div class="first-prompt">
+            <span data-i18n="promptLabel">Then start a conversation</span>
+            <p data-i18n="prompt">
+              “I’m interested in AI infrastructure and Python. Find me projects
+              under 10k stars where I could make a useful contribution.”
+            </p>
+          </div>
+          <a
+            class="quiet-link"
+            href="https://github.com/Momoyeyu/landable/blob/master/landable/SKILL.md"
+            data-i18n="readSkill"
+            >Read the skill</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer wrap">
+      <a class="footer-brand" href="#">landable.</a>
+      <p data-i18n="footerTagline">
+        Find a project. Make yourself useful. Belong.
+      </p>
+      <div>
+        <a href="https://github.com/Momoyeyu/landable">GitHub</a
+        ><a href="https://github.com/Momoyeyu/landable/blob/master/LICENSE"
+          >MIT</a
+        ><a href="https://github.com/Momoyeyu">Momoyeyu</a>
       </div>
-    </div>
-  </section>
-
-  <!-- Pipeline Section -->
-  <section class="pipeline-section" id="pipeline">
-    <div class="pipeline-chapter">
-    <div class="container chapter-stage">
-      <div class="chapter-copy">
-      <p class="section-label" data-reveal data-i18n="pipe_label">The Pipeline</p>
-      <h2 class="section-title" data-reveal data-split data-i18n="pipe_title">Six stages, two decisions</h2>
-      <p class="section-desc" data-reveal data-i18n="pipe_desc">You pick what to work on and approve what gets published. Between those gates, the agent is autonomous.</p>
-      <ol class="chapter-rail" data-reveal aria-label="Pipeline stages">
-        <li class="rail-item"><button type="button" data-rail="0"><span class="rail-num">01</span><span data-i18n="pw_s1">Profile</span></button></li>
-        <li class="rail-item"><button type="button" data-rail="1"><span class="rail-num">02</span><span data-i18n="pw_s2">Scout</span><span class="rail-gate" data-i18n="pw_gate">gate</span></button></li>
-        <li class="rail-item"><button type="button" data-rail="2"><span class="rail-num">03</span><span data-i18n="pw_s3">Assess</span><span class="rail-gate" data-i18n="pw_gate">gate</span></button></li>
-        <li class="rail-item"><button type="button" data-rail="3"><span class="rail-num">04</span><span data-i18n="pw_s4">Implement</span></button></li>
-        <li class="rail-item"><button type="button" data-rail="4"><span class="rail-num">05</span><span data-i18n="pw_s5">Ship</span></button></li>
-        <li class="rail-item"><button type="button" data-rail="5"><span class="rail-num">06</span><span data-i18n="pw_s6">Track</span></button></li>
-      </ol>
-      </div>
-
-      <div class="pipeline-grid">
-        <div class="pipeline-card spot" data-step="01" data-reveal>
-          <div class="pipeline-card-header">
-            <span class="pipeline-card-num">1</span>
-            <h3 class="pipeline-card-title" data-i18n="pipe_c1_title">Profile</h3>
-          </div>
-          <p class="pipeline-card-desc" data-i18n="pipe_c1_desc">Builds an interest card — domains, languages, layer preference — and a capability card for available hardware. Your profile shapes every downstream decision.</p>
-        </div>
-
-        <div class="pipeline-card spot" data-step="02" data-reveal>
-          <div class="pipeline-card-header">
-            <span class="pipeline-card-num">2</span>
-            <h3 class="pipeline-card-title" data-i18n="pipe_c2_title">Scout</h3>
-          </div>
-          <p class="pipeline-card-desc" data-i18n="pipe_c2_desc">Fetches GitHub Trending within your star range, filters by interest fit, and returns a ranked candidate table with a flagged watch list just over the range.</p>
-          <span class="pipeline-card-badge" data-i18n="pipe_c2_badge">Gate 1 — you pick repos</span>
-        </div>
-
-        <div class="pipeline-card spot" data-step="03" data-reveal>
-          <div class="pipeline-card-header">
-            <span class="pipeline-card-num">3</span>
-            <h3 class="pipeline-card-title" data-i18n="pipe_c3_title">Assess</h3>
-          </div>
-          <p class="pipeline-card-desc" data-i18n="pipe_c3_desc">Probes each repo's real openness: who gets merged, whether issues get replies, whether the fix lives in that repo or a dependency, and whether the scope is feasible.</p>
-          <span class="pipeline-card-badge" data-i18n="pipe_c3_badge">Gate 2 — you pick issues</span>
-        </div>
-
-        <div class="pipeline-card spot" data-step="04" data-reveal>
-          <div class="pipeline-card-header">
-            <span class="pipeline-card-num">4</span>
-            <h3 class="pipeline-card-title" data-i18n="pipe_c4_title">Implement</h3>
-          </div>
-          <p class="pipeline-card-desc" data-i18n="pipe_c4_desc">Forks the repo, claims the issue with a comment, writes the fix and a regression test, runs the project's own test and lint gates. Nothing is pushed yet.</p>
-        </div>
-
-        <div class="pipeline-card spot" data-step="05" data-reveal>
-          <div class="pipeline-card-header">
-            <span class="pipeline-card-num">5</span>
-            <h3 class="pipeline-card-title" data-i18n="pipe_c5_title">Ship</h3>
-          </div>
-          <p class="pipeline-card-desc" data-i18n="pipe_c5_desc">Pushes branches, opens PRs on the correct base branch respecting each repo's CONTRIBUTING.md and AGENTS.md rules, fills PR templates honestly.</p>
-        </div>
-
-        <div class="pipeline-card spot" data-step="06" data-reveal>
-          <div class="pipeline-card-header">
-            <span class="pipeline-card-num">6</span>
-            <h3 class="pipeline-card-title" data-i18n="pipe_c6_title">Track</h3>
-          </div>
-          <p class="pipeline-card-desc" data-i18n="pipe_c6_desc">Monitors CI, diagnoses failures, follows up on maintainer review comments. Reports terminal status honestly — merged, closed-with-reason, or parked.</p>
-        </div>
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <!-- Differentiators -->
-  <section class="diff-section" id="approach">
-    <div class="container">
-      <p class="section-label" data-reveal data-i18n="diff_label">The Approach</p>
-      <h2 class="section-title" data-reveal data-split data-i18n="diff_title">What most tools skip</h2>
-      <p class="section-desc" data-reveal data-i18n="diff_desc">The interesting stage isn't implementation — it's assessment. landable checks things agents usually don't.</p>
-
-      <div class="diff-grid">
-        <div class="diff-card spot" data-reveal>
-          <div class="diff-card-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3 class="diff-card-title" data-i18n="diff_c1_title">Acceptance probing</h3>
-          <p class="diff-card-desc" data-i18n="diff_c1_desc">Samples recent merged PRs by authorAssociation. A repo where every merge is OWNER or MEMBER is a closed club — no matter how good the issues look. landable checks before you commit time.</p>
-        </div>
-
-        <div class="diff-card spot" data-reveal>
-          <div class="diff-card-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-          </div>
-          <h3 class="diff-card-title" data-i18n="diff_c2_title">Dependency-aware targeting</h3>
-          <p class="diff-card-desc" data-i18n="diff_c2_desc">Bugs surface in one repo but root in its dependencies. The agent follows imports before committing to a target — fixing the actual cause, not the reported symptom.</p>
-        </div>
-
-        <div class="diff-card spot" data-reveal>
-          <div class="diff-card-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <h3 class="diff-card-title" data-i18n="diff_c3_title">Claim detection</h3>
-          <p class="diff-card-desc" data-i18n="diff_c3_desc">Detects soft claims ("I'll work on this"), assignees, linked PRs, and fork references to avoid racing claimed issues. Fast-moving queues get noted, not gamed.</p>
-        </div>
-
-        <div class="diff-card spot" data-reveal>
-          <div class="diff-card-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          </div>
-          <h3 class="diff-card-title" data-i18n="diff_c4_title">Rules compliance</h3>
-          <p class="diff-card-desc" data-i18n="diff_c4_desc">Reads CONTRIBUTING.md, AGENTS.md, and PR templates before anything is written. Base branch, sign-off, commit signing, changelog format — the repo's own rules always win.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Case Studies -->
-  <section class="cases-section" id="results">
-    <div class="container">
-      <p class="section-label" data-reveal data-i18n="case_label">Results</p>
-      <h2 class="section-title" data-reveal data-split data-i18n="case_title">Does it land?</h2>
-      <p class="section-desc" data-reveal data-i18n="case_desc">Selected contributions found through landable — every link below is a merged PR.</p>
-
-      <div class="case-list">
-        <article class="case-item spot" data-reveal>
-          <div class="case-header">
-            <a class="case-repo" href="https://github.com/tt-a1i/archify">tt-a1i/archify</a>
-            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/tt-a1i/archify?style=flat-square&labelColor=161719&color=d4a84b">
-            <span class="case-status" data-i18n="case_merged">Merged</span>
-          </div>
-          <p class="case-summary" data-i18n="case_c1_summary">An agent skill for interactive diagrams. Repair-rounds evidence led to actionable endpoint diagnostics and clearer repair suggestions; follow-up tests closed benchmark blind spots.</p>
-          <p class="case-detail">PRs: <a href="https://github.com/tt-a1i/archify/pull/654">#654</a> · <a href="https://github.com/tt-a1i/archify/pull/707">#707</a></p>
-        </article>
-
-        <article class="case-item spot" data-reveal>
-          <div class="case-header">
-            <a class="case-repo" href="https://github.com/MakazhanAlpamys/Soup">MakazhanAlpamys/Soup</a>
-            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/MakazhanAlpamys/Soup?style=flat-square&labelColor=161719&color=d4a84b">
-            <span class="case-status" data-i18n="case_merged">Merged</span>
-          </div>
-          <p class="case-summary" data-i18n="case_c2_summary">LLM fine-tuning on modest hardware. Scoped issues span MPS test coverage, parseable answers, evaluation scoring, numeric reward references, and false reward-hacking alarms. Validation and maintainer feedback shaped each patch.</p>
-          <p class="case-detail">PRs: <a href="https://github.com/MakazhanAlpamys/Soup/pull/1375">#1375</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1471">#1471</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1490">#1490</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1533">#1533</a> · <a href="https://github.com/MakazhanAlpamys/Soup/pull/1630">#1630</a></p>
-        </article>
-
-        <article class="case-item spot" data-reveal>
-          <div class="case-header">
-            <a class="case-repo" href="https://github.com/ovg-project/kvcached">ovg-project/kvcached</a>
-            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/ovg-project/kvcached?style=flat-square&labelColor=161719&color=d4a84b">
-            <span class="case-status" data-i18n="case_merged">Merged</span>
-          </div>
-          <p class="case-summary" data-i18n="case_c3_summary">Elastic GPU KV-cache sharing. An old listener's delayed stop could delete a replacement's live Unix socket; the patch guards unlink by socket identity and tests the replacement race.</p>
-          <p class="case-detail">PR: <a href="https://github.com/ovg-project/kvcached/pull/519">#519</a></p>
-        </article>
-
-        <article class="case-item spot" data-reveal>
-          <div class="case-header">
-            <a class="case-repo" href="https://github.com/Tencent-Hunyuan/UniRL">Tencent-Hunyuan/UniRL</a>
-            <img class="case-stars" alt="GitHub stars" src="https://img.shields.io/github/stars/Tencent-Hunyuan/UniRL?style=flat-square&labelColor=161719&color=d4a84b">
-            <span class="case-status" data-i18n="case_merged">Merged</span>
-          </div>
-          <p class="case-summary" data-i18n="case_c4_summary">Multimodal RL. Verified that adapter-unaware sharded-state helpers were unused before removal; separately aligned CPS rollout log-probs without changing training-side loss scaling.</p>
-          <p class="case-detail">PRs: <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/530">#530</a> · <a href="https://github.com/Tencent-Hunyuan/UniRL/pull/536">#536</a></p>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-inner">
-      <p class="footer-left" data-i18n="footer_left">landable &middot; MIT License &middot; by Momoyeyu</p>
-      <ul class="footer-links">
-        <li><a href="https://github.com/Momoyeyu/landable">GitHub</a></li>
-        <li><a href="https://github.com/Momoyeyu/landable/blob/master/landable/SKILL.md" data-i18n="footer_docs">Skill Docs</a></li>
-        <li><a href="https://github.com/Momoyeyu/landable/blob/master/LICENSE" data-i18n="footer_license">License</a></li>
-      </ul>
-    </div>
-  </footer>
-
-  <script>
-    /* ── i18n ── */
-    var i18n = {
-      en: {
-        nav_pipeline: 'Pipeline',
-        nav_approach: 'Approach',
-        nav_results: 'Results',
-        nav_cta: 'Get Started',
-
-        hero_tagline: 'The patch is rarely the hard part — <em>knowing where it can land</em> is.',
-        hero_desc: 'landable is an Agent Skill that walks the full arc from your interests to a merged PR. It scouts repos, probes their real openness, and carries issues through to contribution — with you making only two decisions.',
-        hero_cta_primary: 'See how it works',
-        hero_cta_github: 'View on GitHub',
-
-        pw_s1: 'Profile', pw_s2: 'Scout', pw_s3: 'Assess',
-        pw_s4: 'Implement', pw_s5: 'Ship', pw_s6: 'Track',
-        pw_gate: 'gate',
-        pw_workspace: 'landable workspace',
-
-        pipe_label: 'The Pipeline',
-        pipe_title: 'Six stages, two decisions',
-        pipe_desc: 'You pick what to work on and approve what gets published. Between those gates, the agent is autonomous.',
-        pipe_c1_title: 'Profile',
-        pipe_c1_desc: 'Builds an interest card — domains, languages, layer preference — and a capability card for available hardware. Your profile shapes every downstream decision.',
-        pipe_c2_title: 'Scout',
-        pipe_c2_desc: 'Fetches GitHub Trending within your star range, filters by interest fit, and returns a ranked candidate table with a flagged watch list just over the range.',
-        pipe_c2_badge: 'Gate 1 — you pick repos',
-        pipe_c3_title: 'Assess',
-        pipe_c3_desc: "Probes each repo's real openness: who gets merged, whether issues get replies, whether the fix lives in that repo or a dependency, and whether the scope is feasible.",
-        pipe_c3_badge: 'Gate 2 — you pick issues',
-        pipe_c4_title: 'Implement',
-        pipe_c4_desc: "Forks the repo, claims the issue with a comment, writes the fix and a regression test, runs the project's own test and lint gates. Nothing is pushed yet.",
-        pipe_c5_title: 'Ship',
-        pipe_c5_desc: "Pushes branches, opens PRs on the correct base branch respecting each repo's CONTRIBUTING.md and AGENTS.md rules, fills PR templates honestly.",
-        pipe_c6_title: 'Track',
-        pipe_c6_desc: 'Monitors CI, diagnoses failures, follows up on maintainer review comments. Reports terminal status honestly — merged, closed-with-reason, or parked.',
-
-        diff_label: 'The Approach',
-        diff_title: 'What most tools skip',
-        diff_desc: "The interesting stage isn't implementation — it's assessment. landable checks things agents usually don't.",
-        diff_c1_title: 'Acceptance probing',
-        diff_c1_desc: 'Samples recent merged PRs by authorAssociation. A repo where every merge is OWNER or MEMBER is a closed club — no matter how good the issues look. landable checks before you commit time.',
-        diff_c2_title: 'Dependency-aware targeting',
-        diff_c2_desc: 'Bugs surface in one repo but root in its dependencies. The agent follows imports before committing to a target — fixing the actual cause, not the reported symptom.',
-        diff_c3_title: 'Claim detection',
-        diff_c3_desc: 'Detects soft claims ("I\'ll work on this"), assignees, linked PRs, and fork references to avoid racing claimed issues. Fast-moving queues get noted, not gamed.',
-        diff_c4_title: 'Rules compliance',
-        diff_c4_desc: "Reads CONTRIBUTING.md, AGENTS.md, and PR templates before anything is written. Base branch, sign-off, commit signing, changelog format — the repo's own rules always win.",
-
-        case_label: 'Results',
-        case_title: 'Does it land?',
-        case_desc: 'Selected contributions found through landable — every link below is a merged PR.',
-        case_merged: 'Merged',
-        case_c1_summary: 'An agent skill for interactive diagrams. Repair-rounds evidence led to actionable endpoint diagnostics and clearer repair suggestions; follow-up tests closed benchmark blind spots.',
-        case_c2_summary: 'LLM fine-tuning on modest hardware. Scoped issues span MPS test coverage, parseable answers, evaluation scoring, numeric reward references, and false reward-hacking alarms. Validation and maintainer feedback shaped each patch.',
-        case_c3_summary: 'Elastic GPU KV-cache sharing. An old listener\'s delayed stop could delete a replacement\'s live Unix socket; the patch guards unlink by socket identity and tests the replacement race.',
-        case_c4_summary: 'Multimodal RL. Verified that adapter-unaware sharded-state helpers were unused before removal; separately aligned CPS rollout log-probs without changing training-side loss scaling.',
-
-        install_title: 'Install the skill',
-        install_hint: 'Requires Node.js and GitHub CLI (<code>gh</code>) for authenticated API access.',
-
-        footer_left: 'landable &middot; MIT License &middot; by Momoyeyu',
-        footer_docs: 'Skill Docs',
-        footer_license: 'License',
-
-        stages: [
-          {
-            title: 'Profile',
-            desc: 'Building your interest card from your domains, languages, and hardware capabilities.',
-            steps: [
-              { text: 'Parsing technical interests: AI infra, CUDA, Python tooling', state: 'done' },
-              { text: 'Detecting available hardware: Apple Silicon + CUDA GPU', state: 'done' },
-              { text: 'Layer preference: systems, frameworks, tooling', state: 'done' },
-              { text: 'Profile card saved to ~/.config/landable/', state: 'done' }
-            ]
-          },
-          {
-            title: 'Scout',
-            desc: 'Fetching GitHub Trending and ranking repos by interest fit within your star range.',
-            steps: [
-              { text: 'Fetched daily + weekly trending from GitHub', state: 'done' },
-              { text: 'Filtered: 0–10,000 stars, matching interest domains', state: 'done' },
-              { text: 'Ranked 12 candidates by profile fit score', state: 'done' },
-              { text: 'Awaiting your selection — Gate 1', state: 'current' }
-            ]
-          },
-          {
-            title: 'Assess',
-            desc: "Probing each selected repo for real openness and actionable issues.",
-            steps: [
-              { text: 'Checking authorAssociation on merged PRs...', state: 'done' },
-              { text: 'Verifying: 34% external merges — repo is open', state: 'done' },
-              { text: 'Following imports: bug roots in this repo, confirmed', state: 'done' },
-              { text: 'Scanning for claims: no assignees, no linked PRs', state: 'current' },
-              { text: 'Awaiting your issue selection — Gate 2', state: 'pending' }
-            ]
-          },
-          {
-            title: 'Implement',
-            desc: 'Forking, claiming the issue, writing the fix and regression test.',
-            steps: [
-              { text: 'Forked repo and cloned locally', state: 'done' },
-              { text: 'Claimed issue with assignment comment', state: 'done' },
-              { text: 'Implemented fix on feature branch', state: 'done' },
-              { text: 'Wrote regression test — passes on new code, fails on old', state: 'done' },
-              { text: 'Running repo test suite and lint gates', state: 'current' }
-            ]
-          },
-          {
-            title: 'Ship',
-            desc: "Pushing branches and opening PRs following each repo's contribution rules.",
-            steps: [
-              { text: 'Read CONTRIBUTING.md: base branch = main, requires sign-off', state: 'done' },
-              { text: 'Pushed feature branch to fork', state: 'done' },
-              { text: 'Opened PR with DCO sign-off and conventional commit', state: 'done' },
-              { text: 'Filled PR template — linked issue, described reproduction', state: 'current' },
-              { text: 'Awaiting CI results', state: 'pending' }
-            ]
-          },
-          {
-            title: 'Track',
-            desc: 'Monitoring CI, handling review feedback, reporting final status.',
-            steps: [
-              { text: 'CI passed: tests green, lint clean', state: 'done' },
-              { text: 'Maintainer review: requested one change', state: 'done' },
-              { text: 'Addressed feedback, pushed update', state: 'done' },
-              { text: 'Review approved', state: 'done' },
-              { text: 'Merged — terminal status reported', state: 'done' }
-            ]
-          }
-        ]
-      },
-
-      zh: {
-        nav_pipeline: '流程',
-        nav_approach: '思路',
-        nav_results: '实战',
-        nav_cta: '开始使用',
-
-        hero_tagline: '难的不是写代码，<em>找对项目</em>才是。',
-        hero_desc: 'Landable 从你的兴趣出发，筛选欢迎外部贡献的项目和适合你的 issue，帮你完成实现、测试和 PR 跟进。做什么、发什么，由你决定。',
-        hero_cta_primary: '看看怎么运作',
-        hero_cta_github: '前往 GitHub',
-
-        pw_s1: '画像', pw_s2: '发现', pw_s3: '评估',
-        pw_s4: '实现', pw_s5: '投递', pw_s6: '跟踪',
-        pw_gate: '决策点',
-        pw_workspace: 'landable 工作区',
-
-        pipe_label: '流程',
-        pipe_title: '六个阶段，两次拍板',
-        pipe_desc: '做哪个 issue、提交什么改动，由你决定。其余流程交给 Agent。',
-        pipe_c1_title: '画像',
-        pipe_c1_desc: '了解你这次关注的方向、常用语言和可用硬件。兴趣可以随时换，不用固定成一份档案。',
-        pipe_c2_title: '发现',
-        pipe_c2_desc: '在你关注的星标区间内扫描 GitHub 热门项目，按兴趣匹配度排序，输出一份候选清单。',
-        pipe_c2_badge: '决策点 1 — 你来选仓库',
-        pipe_c3_title: '评估',
-        pipe_c3_desc: '逐个摸清项目的真实开放度：外人的 PR 能不能过、issue 有没有人理、修复到底该提到哪。',
-        pipe_c3_badge: '决策点 2 — 你来选 issue',
-        pipe_c4_title: '实现',
-        pipe_c4_desc: 'Fork 仓库、认领 issue、写修复和回归测试，并运行项目要求的检查。你确认前不会推送代码。',
-        pipe_c5_title: '投递',
-        pipe_c5_desc: '推分支、开 PR，严格遵守每个项目的贡献指南和 AGENTS.md。',
-        pipe_c6_title: '跟踪',
-        pipe_c6_desc: '盯 CI、处理维护者反馈、如实汇报结果——合并、关闭还是搁置，都有交代。',
-
-        diff_label: '思路',
-        diff_title: '怎么找？',
-        diff_desc: '先看项目愿不愿意接外部贡献，再查 issue 有没有人在做、问题该在哪个仓库解决，以及项目有哪些贡献要求。',
-        diff_c1_title: '此路不通',
-        diff_c1_desc: '先看最近合并的 PR 都是谁提的。如果只合并维护者自己的改动，issue 再合适，也未必有人会 review。',
-        diff_c2_title: '追根溯源',
-        diff_c2_desc: 'Bug 报在 A 项目，根因却可能藏在依赖 B 里。动手前顺着代码找到真正该修的仓库。',
-        diff_c3_title: '避免冲突',
-        diff_c3_desc: '检查 assignee、关联 PR、fork 引用，以及评论里的「我来做」，避开已经有人着手的 issue。',
-        diff_c4_title: '遵守规范',
-        diff_c4_desc: '先读 CONTRIBUTING.md、AGENTS.md 和 PR 模板，再按项目要求选目标分支、签名、写 commit 和 changelog。',
-
-        case_label: '实战',
-        case_title: '能work吗？',
-        case_desc: '用 landable 找到并成功贡献的精选案例——链接都指向已合并的 PR。',
-        case_merged: '已合并',
-        case_c1_summary: '把想法和代码库变成交互图的 Agent Skill。repair-rounds 基准测试暴露诊断难以指导修复的问题，于是改进端点诊断与修复建议，再补齐基准测试盲区。',
-        case_c2_summary: '小显存也能微调 LLM。选中能验证的 issue：MPS 测试覆盖、答案解析、评估打分、数值奖励与离散奖励误报；每次都根据实测和维护者反馈调整。',
-        case_c3_summary: '弹性 GPU KV cache。旧 listener 延迟关闭时可能误删同名新 listener 的 Unix socket；补丁按 socket 身份判断是否可删除，并覆盖替换时序。',
-        case_c4_summary: '多模态强化学习。先确认未考虑 adapter 的分片状态辅助函数确实没人调用，再将其删除；另一处修复对齐 CPS rollout log-prob，同时保持训练侧 loss 缩放不变。',
-
-        install_title: '安装 Skill',
-        install_hint: '需要 Node.js 和 GitHub CLI（<code>gh</code>）。',
-
-        footer_left: 'landable &middot; MIT License &middot; by Momoyeyu',
-        footer_docs: 'Skill 文档',
-        footer_license: '许可证',
-
-        stages: [
-          {
-            title: '画像',
-            desc: '从你的技术兴趣、语言和硬件条件生成专属画像。',
-            steps: [
-              { text: '解析技术兴趣：AI infra、CUDA、Python 工具链', state: 'done' },
-              { text: '检测可用硬件：Apple Silicon + CUDA GPU', state: 'done' },
-              { text: '层级偏好：系统、框架、工具', state: 'done' },
-              { text: '本次兴趣画像已准备好，随时可以调整', state: 'done' }
-            ]
-          },
-          {
-            title: '发现',
-            desc: '扫描 GitHub Trending，按兴趣匹配度排序。',
-            steps: [
-              { text: '已获取 GitHub 每日 + 每周趋势', state: 'done' },
-              { text: '已过滤：0–10,000 星标，匹配兴趣领域', state: 'done' },
-              { text: '按画像匹配度排序了 12 个候选', state: 'done' },
-              { text: '等你选仓库 — 决策点 1', state: 'current' }
-            ]
-          },
-          {
-            title: '评估',
-            desc: '逐个摸清选中项目的真实开放度和可操作的 issue。',
-            steps: [
-              { text: '正在检查已合并 PR 的 authorAssociation...', state: 'done' },
-              { text: '验证：34% 外部合并 — 仓库开放', state: 'done' },
-              { text: '追踪 import：bug 根因在此仓库，已确认', state: 'done' },
-              { text: '扫描认领状态：无 assignee，无关联 PR', state: 'current' },
-              { text: '等你选 issue — 决策点 2', state: 'pending' }
-            ]
-          },
-          {
-            title: '实现',
-            desc: 'Fork、认领 issue、写修复和回归测试。',
-            steps: [
-              { text: '已 Fork 并克隆到本地', state: 'done' },
-              { text: '已认领 issue 并留言', state: 'done' },
-              { text: '在功能分支上完成修复', state: 'done' },
-              { text: '回归测试通过 — 新代码过，旧代码挂', state: 'done' },
-              { text: '正在跑项目测试和 lint', state: 'current' }
-            ]
-          },
-          {
-            title: '投递',
-            desc: '推分支、按项目规矩开 PR。',
-            steps: [
-              { text: '已读 CONTRIBUTING.md：目标分支 = main，需要签名', state: 'done' },
-              { text: '已推送功能分支', state: 'done' },
-              { text: '已开 PR，附带 DCO 签名和规范化 commit', state: 'done' },
-              { text: '已填 PR 模板 — 关联 issue，描述复现步骤', state: 'current' },
-              { text: '等待 CI 结果', state: 'pending' }
-            ]
-          },
-          {
-            title: '跟踪',
-            desc: '盯 CI、处理评审反馈、汇报最终状态。',
-            steps: [
-              { text: 'CI 通过：测试全绿，lint 干净', state: 'done' },
-              { text: '维护者评审：请求一处修改', state: 'done' },
-              { text: '已处理反馈并推送更新', state: 'done' },
-              { text: '评审已通过', state: 'done' },
-              { text: '已合并 — 任务完成', state: 'done' }
-            ]
-          }
-        ]
-      }
-    };
-
-    var currentLang = localStorage.getItem('landable-lang') || 'en';
-
-    function applyLang(lang) {
-      currentLang = lang;
-      localStorage.setItem('landable-lang', lang);
-      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-
-      var t = i18n[lang];
-      document.querySelectorAll('[data-i18n]').forEach(function(el) {
-        var key = el.getAttribute('data-i18n');
-        if (t[key] !== undefined) {
-          if (key === 'hero_tagline' || key === 'install_hint' || key === 'footer_left') {
-            el.innerHTML = t[key];
-          } else {
-            el.textContent = t[key];
-          }
-        }
-      });
-
-      document.querySelectorAll('.pw-stage').forEach(function(btn) {
-        btn.setAttribute('data-gate-label', t.pw_gate);
-      });
-
-      var pwTitle = document.querySelector('.pw-title');
-      if (pwTitle) pwTitle.textContent = t.pw_workspace;
-
-      document.querySelectorAll('.lang-toggle button').forEach(function(btn) {
-        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-      });
-
-      var activeStage = document.querySelector('.pw-stage.active');
-      if (activeStage) {
-        renderStage(parseInt(activeStage.dataset.stage));
-      }
-
-      afterLang();
-    }
-
-    document.querySelectorAll('.lang-toggle button').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        applyLang(btn.getAttribute('data-lang'));
-      });
-    });
-
-    /* ── Pipeline Widget ── */
-    var stepIcons = { done: '&#10003;', current: '&#9679;', pending: '&#9675;' };
-
-    function renderStage(idx) {
-      var s = i18n[currentLang].stages[idx];
-      var panel = document.getElementById('pwPanel');
-      panel.innerHTML =
-        '<h3 class="pw-content-title">' + s.title + '</h3>' +
-        '<p class="pw-content-desc">' + s.desc + '</p>' +
-        '<ul class="pw-steps">' +
-        s.steps.map(function(st, i) {
-          return '<li class="pw-step" style="--si:' + i + '">' +
-            '<span class="pw-step-icon ' + st.state + '">' + stepIcons[st.state] + '</span>' +
-            '<span>' + st.text + '</span>' +
-            '</li>';
-        }).join('') +
-        '</ul>';
-    }
-
-    /* Widget: sliding indicator, autoplay driven by the timer bar's own
-       animation (so CSS pause = timer pause), stops for good on user input. */
-    var widget = document.querySelector('.pipeline-widget');
-    var pwSidebar = document.querySelector('.pw-sidebar');
-    var pwIndicator = document.querySelector('.pw-indicator');
-    var pwTimer = document.querySelector('.pw-timer');
-    var stageBtns = Array.prototype.slice.call(document.querySelectorAll('.pw-stage'));
-    var currentStage = 0;
-    var autoplay = true;
-    var widgetHover = false, widgetFocus = false, widgetVisible = false;
-
-    function moveIndicator() {
-      var b = stageBtns[currentStage];
-      pwIndicator.style.setProperty('--ix', b.offsetLeft + 'px');
-      pwIndicator.style.setProperty('--iy', b.offsetTop + 'px');
-      pwIndicator.style.setProperty('--iw', b.offsetWidth + 'px');
-      pwIndicator.style.setProperty('--ih', b.offsetHeight + 'px');
-    }
-
-    function restartTimer() {
-      pwTimer.classList.remove('run');
-      if (!autoplay) return;
-      void pwTimer.offsetWidth;
-      pwTimer.classList.add('run');
-    }
-
-    function syncWidgetPause() {
-      widget.classList.toggle('paused', widgetHover || widgetFocus || !widgetVisible || document.hidden);
-    }
-
-    function setStage(idx, fromUser) {
-      currentStage = idx;
-      stageBtns.forEach(function(b, i) {
-        b.classList.toggle('active', i === idx);
-        b.setAttribute('aria-selected', String(i === idx));
-      });
-      renderStage(idx);
-      moveIndicator();
-      if (pwSidebar.scrollWidth > pwSidebar.clientWidth + 1) {
-        var b = stageBtns[idx];
-        pwSidebar.scrollTo({ left: b.offsetLeft - (pwSidebar.clientWidth - b.offsetWidth) / 2, behavior: reduceMQ.matches ? 'auto' : 'smooth' });
-      }
-      if (fromUser) autoplay = false;
-      restartTimer();
-    }
-
-    stageBtns.forEach(function(btn, i) {
-      btn.addEventListener('click', function() { setStage(i, true); });
-    });
-
-    pwTimer.addEventListener('animationend', function() {
-      if (autoplay) setStage((currentStage + 1) % stageBtns.length, false);
-    });
-
-    widget.addEventListener('pointerenter', function() { widgetHover = true; syncWidgetPause(); });
-    widget.addEventListener('pointerleave', function() { widgetHover = false; syncWidgetPause(); });
-    widget.addEventListener('focusin', function() { widgetFocus = true; syncWidgetPause(); });
-    widget.addEventListener('focusout', function() { widgetFocus = false; syncWidgetPause(); });
-
-    /* ── Copy install command ── */
-    var copyIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-    document.getElementById('copyBtn').addEventListener('click', function() {
-      var code = document.getElementById('installCode').textContent;
-      navigator.clipboard.writeText(code).then(function() {
-        var btn = document.getElementById('copyBtn');
-        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#30a46c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-        btn.classList.remove('copied');
-        void btn.offsetWidth;
-        btn.classList.add('copied');
-        setTimeout(function() { btn.innerHTML = copyIcon; btn.classList.remove('copied'); }, 2000);
-      });
-    });
-
-    /* ── Mobile nav toggle ── */
-    document.getElementById('navToggle').addEventListener('click', function() {
-      var links = document.getElementById('navLinks');
-      var expanded = links.classList.toggle('open');
-      this.setAttribute('aria-expanded', String(expanded));
-    });
-
-    document.querySelectorAll('.nav-links a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        document.getElementById('navLinks').classList.remove('open');
-        document.getElementById('navToggle').setAttribute('aria-expanded', 'false');
-      });
-    });
-
-    /* ── Motion ── */
-    var reduceMQ = matchMedia('(prefers-reduced-motion: reduce)');
-    var fineMQ = matchMedia('(hover: hover) and (pointer: fine)');
-    var chapterMQ = matchMedia('(min-width: 1000px) and (min-height: 620px)');
-    var hasIO = 'IntersectionObserver' in window;
-
-    function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-    function smoothstep(t) { return t * t * (3 - 2 * t); }
-    // Frame-rate independent exponential approach toward a target.
-    function damp(cur, target, dt, tau) { return target + (cur - target) * Math.exp(-dt / tau); }
-
-    /* Split headlines into masked word chunks. Punctuation sticks to the
-       preceding chunk so it never wraps onto its own line. */
-    var segmenter = window.Intl && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: 'word' }) : null;
-
-    function tokens(text) {
-      if (!segmenter) return text.split(/(\s+)/);
-      var out = [];
-      Array.from(segmenter.segment(text)).forEach(function(s) {
-        var seg = s.segment;
-        if (/^\s+$/.test(seg)) out.push(seg);
-        else if (!s.isWordLike && out.length && !/^\s+$/.test(out[out.length - 1])) out[out.length - 1] += seg;
-        else out.push(seg);
-      });
-      return out;
-    }
-
-    function splitWords(el) {
-      var n = 0;
-      (function walk(node) {
-        Array.prototype.slice.call(node.childNodes).forEach(function(child) {
-          if (child.nodeType === 1) { walk(child); return; }
-          if (child.nodeType !== 3) return;
-          var frag = document.createDocumentFragment();
-          tokens(child.textContent).forEach(function(part) {
-            if (!part) return;
-            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
-            var w = document.createElement('span');
-            var inner = document.createElement('span');
-            w.className = 'w';
-            inner.textContent = part;
-            inner.style.setProperty('--wi', n++);
-            w.appendChild(inner);
-            frag.appendChild(w);
-          });
-          node.replaceChild(frag, child);
-        });
-      })(el);
-    }
-
-    var splitEls = Array.prototype.slice.call(document.querySelectorAll('[data-split]'));
-
-    function afterLang() {
-      splitEls.forEach(function(el) {
-        splitWords(el);
-        if (el.classList.contains('in-view')) {
-          el.classList.remove('in-view');
-          void el.offsetWidth;
-          el.classList.add('in-view');
-        }
-      });
-      if (pwIndicator) moveIndicator();
-    }
-
-    /* One-shot reveal. Elements already scrolled past reveal immediately. */
-    var revealEls = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
-    revealEls.forEach(function(el) {
-      var explicit = el.getAttribute('data-reveal');
-      var sibs = Array.prototype.filter.call(el.parentNode.children, function(c) { return c.hasAttribute('data-reveal'); });
-      el.style.setProperty('--i', explicit !== '' ? explicit : sibs.indexOf(el));
-    });
-
-    var revealIO = hasIO ? new IntersectionObserver(function(entries) {
-      entries.forEach(function(e) {
-        if (e.isIntersecting || e.boundingClientRect.bottom < 0) {
-          e.target.classList.add('in-view');
-          revealIO.unobserve(e.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }) : null;
-
-    document.querySelectorAll('.diff-card-icon svg > *').forEach(function(s) { s.setAttribute('pathLength', '1'); });
-
-    /* Spotlight follows the pointer inside each card */
-    document.querySelectorAll('.spot').forEach(function(card) {
-      card.addEventListener('pointermove', function(e) {
-        var b = card.getBoundingClientRect();
-        card.style.setProperty('--mx', (e.clientX - b.left) + 'px');
-        card.style.setProperty('--my', (e.clientY - b.top) + 'px');
-      });
-    });
-
-    /* Nav: active section underline */
-    var navLinks = {};
-    document.querySelectorAll('.nav-links a[href^="#"]:not(.nav-cta)').forEach(function(a) { navLinks[a.getAttribute('href').slice(1)] = a; });
-    if (hasIO) {
-      var sectionIO = new IntersectionObserver(function(entries) {
-        entries.forEach(function(e) {
-          if (!e.isIntersecting) return;
-          Object.keys(navLinks).forEach(function(id) { navLinks[id].classList.toggle('active', id === e.target.id); });
-        });
-      }, { rootMargin: '-45% 0px -50% 0px' });
-      document.querySelectorAll('main section, body > section').forEach(function(s) { if (s.id) sectionIO.observe(s); });
-    }
-
-    /* ── Scroll + pointer engine: one rAF loop, runs only while settling ── */
-    var nav = document.querySelector('nav');
-    var hero = document.querySelector('.hero');
-    var progressBar = document.querySelector('.scroll-progress');
-    var pipeSection = document.getElementById('pipeline');
-    var chapter = document.querySelector('.pipeline-chapter');
-    var chapterStage = document.querySelector('.chapter-stage');
-    var chapterRail = document.querySelector('.chapter-rail');
-    var railItems = Array.prototype.slice.call(document.querySelectorAll('.rail-item'));
-    var pipeCards = Array.prototype.slice.call(document.querySelectorAll('.pipeline-card'));
-    var navH = 65, chapterOn = false, chapterIdx = -1;
-
-    var keys = ['heroOut', 'gx', 'gy', 'tx', 'ty', 'cp'];
-    var tau = { heroOut: 0.08, gx: 0.35, gy: 0.35, tx: 0.16, ty: 0.16, cp: 0.09 };
-    var eps = { heroOut: 0.0005, gx: 0.1, gy: 0.1, tx: 0.002, ty: 0.002, cp: 0.0003 };
-    var cur = {}, tgt = {};
-    keys.forEach(function(k) { cur[k] = 0; tgt[k] = 0; });
-    var raf = 0, last = 0;
-
-    function chapterSpan() { return Math.max(1, chapter.offsetHeight - chapterStage.offsetHeight); }
-
-    function readScroll() {
-      var max = document.documentElement.scrollHeight - innerHeight;
-      progressBar.style.transform = 'scaleX(' + (max > 0 ? clamp(scrollY / max, 0, 1) : 0).toFixed(4) + ')';
-      tgt.heroOut = reduceMQ.matches ? 0 : clamp(scrollY / hero.offsetHeight, 0, 1);
-      if (chapterOn) tgt.cp = clamp((navH - chapter.getBoundingClientRect().top) / chapterSpan(), 0, 1);
-    }
-
-    // Each stage holds still for the middle of its scroll segment, then hands off.
-    function chapterX(p) {
-      var n = pipeCards.length - 1, r = p * n, seg = Math.floor(r);
-      if (seg >= n) return n;
-      return seg + smoothstep(clamp((r - seg - 0.3) / 0.4, 0, 1));
-    }
-
-    function paintChapter(p) {
-      var x = chapterX(p), idx = Math.round(x), n = pipeCards.length - 1;
-      pipeCards.forEach(function(c, i) {
-        var d = x - i, a = Math.abs(d);
-        // Outgoing clears just before incoming arrives: opacity hits 0 at |d| = 0.48.
-        c.style.setProperty('--co', smoothstep(clamp(1 - a / 0.48, 0, 1)).toFixed(3));
-        c.style.setProperty('--cy', (clamp(d, -1, 1) * -64).toFixed(1) + 'px');
-        c.style.setProperty('--cs', (1 - Math.min(a, 1) * 0.05).toFixed(4));
-      });
-      chapterRail.style.setProperty('--rp', (x / n).toFixed(4));
-      if (idx === chapterIdx) return;
-      chapterIdx = idx;
-      pipeCards.forEach(function(c, i) { c.classList.toggle('is-active', i === idx); c.inert = i !== idx; });
-      railItems.forEach(function(li, i) {
-        li.classList.toggle('active', i === idx);
-        li.classList.toggle('done', i < idx);
-        if (i === idx) li.firstElementChild.setAttribute('aria-current', 'step');
-        else li.firstElementChild.removeAttribute('aria-current');
-      });
-    }
-
-    function paint() {
-      hero.style.setProperty('--hero-out', cur.heroOut.toFixed(4));
-      hero.style.setProperty('--gx', cur.gx.toFixed(1));
-      hero.style.setProperty('--gy', cur.gy.toFixed(1));
-      widget.style.setProperty('--tx', cur.tx.toFixed(3));
-      widget.style.setProperty('--ty', cur.ty.toFixed(3));
-      if (chapterOn) paintChapter(cur.cp);
-    }
-
-    function frame(now) {
-      raf = 0;
-      var dt = last ? Math.min((now - last) / 1000, 0.05) : 1 / 60;
-      last = now;
-      var moving = false;
-      keys.forEach(function(k) {
-        var v = reduceMQ.matches ? tgt[k] : damp(cur[k], tgt[k], dt, tau[k]);
-        if (Math.abs(v - tgt[k]) < eps[k]) v = tgt[k]; else moving = true;
-        cur[k] = v;
-      });
-      paint();
-      if (moving) raf = requestAnimationFrame(frame); else last = 0;
-    }
-
-    function schedule() { if (!raf) raf = requestAnimationFrame(frame); }
-
-    function setChapter() {
-      navH = nav.offsetHeight;
-      document.documentElement.style.setProperty('--nav-h', navH + 'px');
-      chapterOn = chapterMQ.matches && !reduceMQ.matches && hasIO;
-      pipeSection.classList.toggle('chapter-on', chapterOn);
-      chapterIdx = -1;
-      if (chapterOn) {
-        chapter.style.height = (chapterStage.offsetHeight + (pipeCards.length - 1) * innerHeight * 0.55) + 'px';
-      } else {
-        chapter.style.height = '';
-        pipeCards.forEach(function(c) {
-          c.inert = false;
-          c.classList.remove('is-active');
-          ['--co', '--cy', '--cs'].forEach(function(p) { c.style.removeProperty(p); });
-        });
-      }
-      readScroll();
-      cur.cp = tgt.cp;
-      paint();
-    }
-
-    railItems.forEach(function(li, i) {
-      li.firstElementChild.addEventListener('click', function() {
-        if (!chapterOn) return;
-        var p = i / (pipeCards.length - 1);
-        var top = scrollY + chapter.getBoundingClientRect().top - navH + p * chapterSpan();
-        window.scrollTo({ top: Math.ceil(top) + 1, behavior: 'smooth' });
-      });
-    });
-
-    hero.addEventListener('pointermove', function(e) {
-      if (!fineMQ.matches || reduceMQ.matches) return;
-      var hb = hero.getBoundingClientRect(), wb = widget.getBoundingClientRect();
-      tgt.gx = ((e.clientX - hb.left) / hb.width * 2 - 1) * 140;
-      tgt.gy = ((e.clientY - hb.top) / hb.height * 2 - 1) * 90;
-      tgt.tx = clamp((e.clientX - (wb.left + wb.width / 2)) / wb.width, -1, 1) * 5;
-      tgt.ty = clamp((e.clientY - (wb.top + wb.height / 2)) / wb.height, -1, 1) * -4;
-      widget.style.setProperty('--px', ((e.clientX - wb.left) / wb.width * 100).toFixed(1) + '%');
-      widget.style.setProperty('--py', ((e.clientY - wb.top) / wb.height * 100).toFixed(1) + '%');
-      schedule();
-    });
-
-    hero.addEventListener('pointerleave', function() {
-      tgt.gx = tgt.gy = tgt.tx = tgt.ty = 0;
-      schedule();
-    });
-
-    addEventListener('scroll', function() { readScroll(); schedule(); }, { passive: true });
-
-    var resizeTimer = 0;
-    addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() { setChapter(); moveIndicator(); schedule(); }, 120);
-    }, { passive: true });
-
-    function onMotionPref() {
-      if (reduceMQ.matches) { autoplay = false; restartTimer(); }
-      setChapter();
-      schedule();
-    }
-
-    [reduceMQ, chapterMQ].forEach(function(mq) {
-      if (mq.addEventListener) mq.addEventListener('change', onMotionPref);
-      else mq.addListener(onMotionPref);
-    });
-
-    document.addEventListener('visibilitychange', syncWidgetPause);
-
-    /* ── Init ── */
-    renderStage(0);
-    applyLang(currentLang);
-    autoplay = !reduceMQ.matches;
-    setStage(0, false);
-    setChapter();
-
-    if (hasIO) {
-      revealEls.forEach(function(el) { revealIO.observe(el); });
-      new IntersectionObserver(function(entries) {
-        widgetVisible = entries[0].isIntersecting;
-        syncWidgetPause();
-      }, { threshold: 0.35 }).observe(widget);
-    } else {
-      revealEls.forEach(function(el) { el.classList.add('in-view'); });
-      widgetVisible = true;
-    }
-    syncWidgetPause();
-
-    // Fonts change line metrics; re-measure layout-dependent pieces once they land.
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function() { setChapter(); moveIndicator(); });
-  </script>
-
-</body>
+    </footer>
+  </body>
 </html>

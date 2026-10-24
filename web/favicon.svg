@@ -1,14 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="-150 -150 300 300">
-  <defs>
-    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#E8623C"/>
-      <stop offset="1" stop-color="#F2A33C"/>
-    </linearGradient>
-  </defs>
-  <path d="M -96 -88 L -96 -20 Q -96 44 -28 44 L 44 44" fill="none" stroke="url(#mark)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M -96 -8 L -96 20 Q -96 44 -60 44" fill="none" stroke="url(#mark)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
-  <circle cx="-96" cy="-88" r="34" fill="none" stroke="url(#mark)" stroke-width="22"/>
-  <circle cx="-96" cy="-88" r="12" fill="#F2A33C"/>
-  <circle cx="96" cy="44" r="44" fill="none" stroke="url(#mark)" stroke-width="24"/>
-  <path d="M 74 42 L 90 58 L 122 26" fill="none" stroke="#F2A33C" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#091426"/><g fill="none" stroke="#9edbc7" stroke-width="2.8"><path d="M19 16v18c0 10 6 16 17 16h10M19 29c0 10 8 15 17 15"/><circle cx="19" cy="14" r="5" fill="#091426"/><circle cx="47" cy="50" r="6" fill="#091426"/><path d="m44 50 2 2 4-4" stroke-width="1.7"/></g></svg>

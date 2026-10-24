@@ -1,0 +1,527 @@
+/* Without enhancement (or with reduced motion), the original reading layout remains intact. */
+.story-runway,
+.story-stage,
+.story-panel,
+.story-content {
+  display: contents;
+}
+.story-particles,
+.story-sky,
+.story-navigation {
+  display: none;
+}
+:root {
+  --ocean: #091426;
+  --deep: #060e1e;
+  --chart: #11253e;
+}
+body {
+  background:
+    radial-gradient(ellipse at 75% 15%, #17193b55, transparent 52%),
+    var(--ocean);
+}
+.atlas::before {
+  background: radial-gradient(ellipse, #31447924, transparent 67%);
+}
+.story-mode {
+  scroll-behavior: auto;
+  scroll-padding-top: 0;
+  background: var(--ocean);
+}
+.story-mode .skip-link {
+  z-index: 30;
+}
+.story-mode .site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 91px;
+  margin: 0;
+  padding-inline: max(56px, calc((100vw - 1240px) / 2));
+  background: linear-gradient(#091426 10%, #091426 85%, #09142600);
+  z-index: 20;
+}
+.story-mode .story-runway {
+  display: block;
+  position: relative;
+}
+.story-mode .story-stage {
+  display: block;
+  position: sticky;
+  top: 0;
+  height: var(--story-height, 100svh);
+  overflow: clip;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 76% 30%, #20204b35, transparent 58%),
+    radial-gradient(ellipse at 20% 90%, #15374722, transparent 60%),
+    var(--ocean);
+}
+.story-mode .story-panel {
+  display: block;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+.story-mode .story-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  padding: 112px 0 83px;
+  transform: translateZ(0);
+}
+.story-mode .story-panel:focus-visible {
+  outline: 0;
+}
+.story-mode .story-particles {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+.story-mode .story-sky {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: #9eacd1;
+  pointer-events: none;
+  z-index: -1;
+}
+.story-mode .hero {
+  min-height: 0;
+  padding-block: 0;
+}
+.story-mode .hero-copy,
+.story-mode .atlas-plane,
+.story-mode .route > path {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+.story-mode .atlas-plane {
+  transform: none;
+}
+.story-mode .horizon {
+  display: none;
+}
+.story-mode .section-space,
+.story-mode .start-section {
+  padding-block: 0;
+}
+.story-mode .journey-section {
+  padding-block: 0;
+  background: transparent;
+  border: 0;
+}
+.story-mode .journey-section::before {
+  display: none;
+}
+.story-mode .start-section {
+  border: 0;
+}
+.story-mode .journey-heading h2 {
+  font-size: 54px;
+}
+.story-mode .journey-stages {
+  margin-top: 37px;
+}
+.story-mode .journey-detail {
+  min-height: 300px;
+  margin-top: 23px;
+  padding-bottom: 22px;
+}
+.story-mode .journey-promise {
+  margin-top: 22px;
+  padding-top: 21px;
+}
+.story-mode .work-heading {
+  margin-bottom: 33px;
+}
+.story-mode .work-row {
+  padding-block: 22px;
+}
+.story-mode .work-source {
+  margin-top: 20px;
+}
+.story-mode .start-orbit {
+  bottom: -30px;
+}
+.story-mode .site-footer {
+  position: relative;
+}
+.story-mode .story-navigation {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  align-items: center;
+  gap: 15px;
+  z-index: 8;
+  max-width: calc(100% - 44px);
+}
+.chapter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 30px;
+  min-width: 30px;
+  padding: 7px 3px;
+  background: none;
+  border: 0;
+  color: #a7bad0;
+  font-size: 9px;
+  white-space: nowrap;
+}
+.chapter-mark {
+  width: 4px;
+  height: 4px;
+  border: 1px solid #94b5c380;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+.chapter-caption {
+  display: none;
+}
+.chapter-button[aria-current="step"] .chapter-mark {
+  background: var(--mint);
+  border-color: var(--mint);
+  box-shadow: 0 0 9px #9edbc738;
+}
+.chapter-button[aria-current="step"] .chapter-caption {
+  display: inline;
+}
+.story-mode :lang(zh) .journey-heading h2 {
+  font-size: 43px;
+}
+@media (max-width: 1100px) {
+  .story-mode .site-header {
+    padding-inline: 40px;
+  }
+  .story-mode .story-content {
+    padding-top: 108px;
+    padding-bottom: 77px;
+  }
+  .story-mode .journey-heading h2 {
+    font-size: 47px;
+  }
+  .story-mode .journey-detail {
+    gap: 60px;
+  }
+  .story-mode :lang(zh) .journey-heading h2 {
+    font-size: 38px;
+  }
+}
+@media (max-width: 800px) {
+  .story-mode .site-header {
+    padding-inline: 30px;
+  }
+  .story-mode .story-content {
+    padding-top: 108px;
+    padding-bottom: 78px;
+  }
+  .story-mode .hero {
+    gap: 32px;
+  }
+  .story-mode .hero-copy {
+    padding-bottom: 0;
+  }
+  .story-mode .hero-note {
+    margin-top: 21px;
+  }
+  .story-mode .journey-heading h2 {
+    font-size: 43px;
+  }
+  .story-mode :lang(zh) .journey-heading h2 {
+    font-size: 34px;
+  }
+  .story-mode .journey-detail {
+    gap: 40px;
+  }
+  .story-mode .work-row {
+    padding-block: 19px;
+  }
+  .story-mode .start-orbit {
+    bottom: 0;
+  }
+}
+@media (max-width: 600px) {
+  .story-mode .site-header {
+    height: 83px;
+    padding-inline: 22px;
+  }
+  .story-mode .story-content {
+    padding-top: 112px;
+    padding-bottom: 82px;
+  }
+  .story-mode .hero {
+    gap: 38px;
+  }
+  .story-mode .hero-copy {
+    padding-left: 4px;
+  }
+  .story-mode .hero h1 {
+    font-size: 56px;
+  }
+  .story-mode :lang(zh) .hero h1 {
+    font-size: 40px;
+  }
+  .story-mode .intro-mark {
+    margin-bottom: 20px;
+  }
+  .story-mode .hero-description {
+    margin-top: 21px;
+  }
+  .story-mode .hero-actions {
+    margin-top: 23px;
+  }
+  .story-mode .atlas {
+    margin-top: 0;
+  }
+  .story-mode .journey-heading h2 {
+    font-size: 43px;
+  }
+  .story-mode :lang(zh) .journey-heading h2 {
+    font-size: 34px;
+  }
+  .story-mode .journey-stages {
+    margin-top: 30px;
+  }
+  .story-mode .journey-detail {
+    gap: 30px;
+    margin-top: 19px;
+  }
+  .story-mode .journey-promise {
+    margin-top: 28px;
+  }
+  .story-mode .work-heading {
+    margin-bottom: 28px;
+  }
+  .story-mode .work-row {
+    padding-block: 22px;
+  }
+  .story-mode .start-orbit {
+    top: 0;
+    bottom: auto;
+  }
+  .story-mode .story-navigation {
+    bottom: 18px;
+    gap: 9px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #091426d9;
+    backdrop-filter: blur(9px);
+  }
+  .chapter-button {
+    font-size: 9px;
+    min-width: 28px;
+  }
+  .story-mode .section-intro > p[data-i18n="approachBody"] {
+    margin-top: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chapter-mark {
+    transition: none;
+  }
+}
+
+/* Each resting composition has its own responsive landing, independent of the morph clock. */
+.story-mode .story-panel {
+  --scene-align: center;
+}
+.story-mode .story-panel[data-scene="0"] {
+  --scene-top: 106px;
+  --scene-bottom: 78px;
+}
+.story-mode .story-panel[data-scene="1"] {
+  --scene-top: 122px;
+  --scene-bottom: 100px;
+}
+.story-mode .story-panel[data-scene="2"] {
+  --scene-top: 116px;
+  --scene-bottom: 88px;
+}
+.story-mode .story-panel[data-scene="3"] {
+  --scene-top: 120px;
+  --scene-bottom: 92px;
+}
+.story-mode .story-panel[data-scene="4"] {
+  --scene-top: 116px;
+  --scene-bottom: 116px;
+}
+.story-mode .story-content {
+  padding: var(--scene-top) 0 var(--scene-bottom);
+  justify-content: var(--scene-align);
+}
+.particle-keepsake {
+  width: 194px;
+  height: 104px;
+  margin-top: 22px;
+  color: #b6b1eb;
+  opacity: 0.6;
+}
+.particle-keepsake svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+@media (min-width: 601px) and (max-width: 800px) {
+  .story-mode .story-panel[data-scene="0"] {
+    --scene-align: flex-start;
+    --scene-top: 122px;
+    --scene-bottom: 104px;
+  }
+  .story-mode .story-panel[data-scene="1"] {
+    --scene-top: 116px;
+    --scene-bottom: 100px;
+  }
+  .story-mode .story-panel[data-scene="2"] {
+    --scene-align: flex-start;
+    --scene-top: 112px;
+    --scene-bottom: 100px;
+  }
+  .story-mode .story-panel[data-scene="3"] {
+    --scene-align: flex-start;
+    --scene-top: 116px;
+    --scene-bottom: 104px;
+  }
+  .story-mode .story-panel[data-scene="4"] {
+    --scene-top: 116px;
+    --scene-bottom: 100px;
+  }
+}
+@media (max-width: 600px) {
+  .story-mode .story-panel {
+    --scene-align: flex-start;
+  }
+  .story-mode .story-panel[data-scene="0"] {
+    --scene-top: 108px;
+    --scene-bottom: 100px;
+  }
+  .story-mode .story-panel[data-scene="1"] {
+    --scene-top: 112px;
+    --scene-bottom: 110px;
+  }
+  .story-mode .story-panel[data-scene="2"] {
+    --scene-top: 112px;
+    --scene-bottom: 108px;
+  }
+  .story-mode .story-panel[data-scene="3"] {
+    --scene-top: 112px;
+    --scene-bottom: 104px;
+  }
+  .story-mode .story-panel[data-scene="4"] {
+    --scene-top: 116px;
+    --scene-bottom: 100px;
+  }
+  .particle-keepsake {
+    width: 156px;
+    height: 84px;
+    margin-top: 17px;
+  }
+}
+@media (min-width: 801px) and (max-height: 820px) {
+  .story-mode .site-header {
+    height: 78px;
+  }
+  .story-mode .story-panel[data-scene] {
+    --scene-top: 96px;
+    --scene-bottom: 72px;
+  }
+  .story-mode .hero h1 {
+    font-size: clamp(60px, 5.6vw, 78px);
+  }
+  .story-mode :lang(zh) .hero h1 {
+    font-size: clamp(42px, 4.1vw, 58px);
+  }
+  .story-mode .atlas {
+    width: min(calc(100% + 40px), calc((var(--story-height) - 205px) / 0.93));
+    margin-inline: 0;
+    justify-self: center;
+  }
+  .story-mode .journey-heading h2 {
+    font-size: 43px;
+  }
+  .story-mode :lang(zh) .journey-heading h2 {
+    font-size: 36px;
+  }
+  .story-mode .journey-stages {
+    margin-top: 26px;
+  }
+  .story-mode .journey-detail {
+    min-height: 260px;
+    margin-top: 16px;
+    padding-bottom: 16px;
+  }
+  .story-mode .journey-promise {
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+  .story-mode .artifact-top {
+    margin-bottom: 17px;
+  }
+  .story-mode .artifact-items {
+    margin-bottom: 18px;
+  }
+  .story-mode .artifact-items li {
+    margin-block: 7px;
+  }
+  .story-mode .human-choice {
+    padding-block: 13px;
+  }
+  .particle-keepsake {
+    width: 168px;
+    height: 90px;
+    margin-top: 15px;
+  }
+}
+/* The final particle keepsake owns real layout space, so it never floats through copy. */
+.story-mode .start-section {
+  row-gap: 10px;
+}
+.story-mode .start-copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+.story-mode .start-orbit {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  grid-column: 1;
+  grid-row: 2;
+  width: 230px;
+  height: 160px;
+  margin-top: -8px;
+  opacity: 0.8;
+}
+.story-mode .start-orbit svg {
+  width: 100%;
+  height: 100%;
+}
+.story-mode .start-install {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+@media (max-width: 600px) {
+  .story-mode .start-section {
+    row-gap: 22px;
+  }
+  .story-mode .start-orbit {
+    width: 220px;
+    height: 145px;
+    margin: -10px auto;
+  }
+  .story-mode .start-install {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
